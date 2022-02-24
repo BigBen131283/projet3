@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.12.0/css/ol.css" type="text/css">
+        <title>Projet 3</title>
+        <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.12.0/build/ol.js"></script>
+    </head>
+
+    <body>
+        <h1></h1>
+        <div class="intro">
+
+        </div>
+        <div class="booking">
+            <div class="partone">
+                <div id="map" class="map"></div>
+                <script type="text/javascript">
+                var map = new ol.Map({
+                    target: 'map',
+                    layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    })
+                    ],
+                    view: new ol.View({
+                    center: ol.proj.fromLonLat([37.41, 8.82]),
+                    zoom: 4
+                    })
+                });
+                </script>
+                <div class="detail">
+                    <h2>Détail de la station</h2>
+                    <p>Adresse : <span id="adress">...</span></p>
+                    <p><span id="remain_places">places</span></p>
+                    <p><span id="remain_bikes">vélos disponibles</span></p>
+                    <form action="" method="post">
+                        <div class="line">
+                            <label for="last_name">Nom</label>
+                            <input type="text" name="user_lastname" id="name">
+                        </div>
+                        <div class="line">
+                            <label for="first_name">Prénom</label>
+                            <input type="text" name="user_firstname" id="first_name">
+                        </div>
+                        <div class="button">
+                            <button type="submit">Réserver</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="parttwo">
+                <p>Vélo réservé à la station <span id="station"></span> par <span id="client"></span></p>
+                <p>Temps restant : <span id="timer"></span></p>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script src="./script.js"></script>
