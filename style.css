@@ -1,7 +1,38 @@
+/*general*/
+
 body
 {
     font-size: 1rem;
 }
+
+h1
+{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/*slider section*/
+
+.nav
+{
+    display: flex;
+    justify-content: center;
+    height: 4rem;
+}
+
+.nav i
+{
+    height: 100%;
+    width: 15%;
+    font-size: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/*booking section*/
 
 .booking
 {
@@ -43,7 +74,7 @@ body
     padding-left: 10px;
     border: 1px solid black;
     border-radius: 10px;
-    box-shadow: 3px 3px;
+    box-shadow: 3px 3px 5px grey;
 }
 
 .detail h2
@@ -58,6 +89,10 @@ body
     padding-right: 6px;
 }
 
+form
+{
+    max-width: 300px;
+}
 
 .line
 {
