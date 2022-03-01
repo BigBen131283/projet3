@@ -1,4 +1,4 @@
-console.log ("coucou");
+import map from './classes/map.js'
 
 const slide = ["/images/image1.jpg", "/images/image2.jpg", "/images/image3.jpg"];
 let numero = 0;
@@ -32,4 +32,8 @@ function autoDefil() {
     }
 }
 
-setInterval(autoDefil, 5000);
+let interval = setInterval(autoDefil, 5000);
+
+let thecity = new map('LYON');
+console.log(thecity.getVersion());
+
