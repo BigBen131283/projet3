@@ -1,0 +1,2 @@
+GET https://api.jcdecaux.com/vls/v1/stations?contract=LYON&apiKey=d41e614116778515fc0aec5c933964f867ca5d86
+
