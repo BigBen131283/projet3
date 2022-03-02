@@ -8,7 +8,7 @@
 export default class map {
 
   constructor () {
-    this.version = "map.js 1.12 Mar 02 2022"
+    this.version = "map.js 1.13 Mar 02 2022"
     this.availablecities = [
       {name: 'LYON', coord:  [4.8339838, 45.7569838] },
       {name: 'TOULOUSE', coord:  [1.42988070604336, 43.5935069290371, ] },
@@ -17,6 +17,7 @@ export default class map {
     this.zoomfactor = 12; 
     this.city = null;
     this.map = null;
+    this.theview = null;
   }
   // ----------------------------------------------- Check city is in the supported list
   checkRequestedCity(city) {
@@ -37,6 +38,10 @@ export default class map {
   // ----------------------------------------------- Open Layer map
   createMap(selectedcity = 'WORLD') {
     this.city = this.checkRequestedCity(selectedcity) ;
+    this.theview = new ol.View({
+      center: ol.proj.fromLonLat(this.city.coord),
+      zoom: this.zoomfactor,
+    });
     // If the city is WORLD (unfound city in the list), reduce zoom
     if(this.city.name === 'WORLD')
       this.zoomfactor = 2;
@@ -47,14 +52,19 @@ export default class map {
               source: new ol.source.OSM()
           })
         ],
-        view: new ol.View({
-          center: ol.proj.fromLonLat(this.city.coord),
-          zoom: this.zoomfactor,
-        })
+        view: this.theview
       });
     console.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
   }
-
+  // ----------------------------------------------- Switch the map when new city selected
+  switchMap(selectedcity) {
+    this.city = this.checkRequestedCity(selectedcity) ;
+    this.theview.animate( {
+      center: ol.proj.fromLonLat(this.city.coord),
+      duration: 2000
+    });
+  }
+  // ----------------------------------------------- 
   getVersion() {
     return this.version;
   }

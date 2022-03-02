@@ -52,7 +52,7 @@ function changeSlide(sens) {
     document.getElementById("slide").src = slide[numero];
 }
 function switchCity() {
-    themap.createMap(cityselect.value);
+    themap.switchMap(cityselect.value);
 }
 
 
