@@ -3,12 +3,13 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="style.css">
         <link rel="stylesheet" href="./ol/ol.css" type="text/css">
-        <title>Projet 3</title>
+        <title>Rent a Bike</title>
         <script src="https://kit.fontawesome.com/72f3363021.js" crossorigin="anonymous"></script>
     </head>
 
     <body>
         <h1>Réservez votre vélo</h1>
+        <h4>projet3, Mar 02 2022: 1.09</h4>
         <div class="intro">
             <div id="slider">
                 <img src="/images/image1.jpg" alt="Select your bike" id="slide">
@@ -23,6 +24,8 @@
             <div class="partone">
                 <div id="map" class="map"></div>
                 <div class="detail">
+                    <label for="cityselection">Choisissez une ville</label>
+                    <select name="cityselection" id="cityselect"></select>
                     <h2>Détail de la station</h2>
                     <p>Adresse : <span id="adress">...</span></p>
                     <p><span id="remain_places">places</span></p>

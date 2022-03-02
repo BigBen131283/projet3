@@ -2,22 +2,21 @@
     map.js
 
     Mar 01 2022   Initial
+    Mar 02 2022   Work on lat / long coordinates when creating the map
 
 */
 export default class map {
 
-  constructor (city) {
-    this.version = "map.js 1.10 Mar 02 2022"
+  constructor () {
+    this.version = "map.js 1.12 Mar 02 2022"
     this.availablecities = [
       {name: 'LYON', coord:  [4.8339838, 45.7569838] },
       {name: 'TOULOUSE', coord:  [1.42988070604336, 43.5935069290371, ] },
       {name: 'BRUXELLES', coord:  [4.38418,50.84177] },
     ];
     this.zoomfactor = 12; 
-
-    this.city = this.checkRequestedCity(city);   // Which map are we going to build ? 
-    console.log('Now get the map for ' + this.city.name);
-    this.createMap();
+    this.city = null;
+    this.map = null;
   }
   // ----------------------------------------------- Check city is in the supported list
   checkRequestedCity(city) {
@@ -30,12 +29,18 @@ export default class map {
     }
     return thecity;
   }
+
+  // ----------------------------------------------- Get cities list
+  getCities() {
+    return this.availablecities;
+  }
   // ----------------------------------------------- Open Layer map
-  createMap() {
+  createMap(selectedcity = 'WORLD') {
+    this.city = this.checkRequestedCity(selectedcity) ;
     // If the city is WORLD (unfound city in the list), reduce zoom
     if(this.city.name === 'WORLD')
       this.zoomfactor = 2;
-    let map = new ol.Map({
+    this.map = new ol.Map({
         target: 'map',
         layers: [
           new ol.layer.Tile({
@@ -47,7 +52,6 @@ export default class map {
           zoom: this.zoomfactor,
         })
       });
-      console.log(map)
     console.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
   }
 
