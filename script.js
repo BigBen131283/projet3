@@ -1,12 +1,14 @@
 /*
     script.js
 
-    Feb 26 2022   Initial
-    Mar 02 2022   Work on lat / long coordinates when creating the map
-    Mar 03 2022   Include Toggle Pause code from main branch
+    Feb 26 2022 Initial
+    Mar 02 2022 Work on lat / long coordinates when creating the map
+    Mar 03 2022 Include Toggle Pause code from main branch
+                Start work on API calls to JCDECAUX
 
 */
 import map from './classes/map.js'
+import stations from './classes/stations.js'
 // -----------------------------------------------------------------
 // Initialization
 // -----------------------------------------------------------------
@@ -25,13 +27,17 @@ cityselect.addEventListener('change', () => switchCity())
 
 // Load the list box with supported cities
 let themap = new map();
+let citystations = null;
 let allcities =themap.getCities();
 for(let i = 0; i < allcities.length; i++) {
     let option = document.createElement('option');
     option.value = option.innerHTML = allcities[i].name;
     cityselect.appendChild(option);
 }
+// Display the selected city map
 themap.createMap(allcities[0].name);
+// get the selected city stations
+citystations = new stations(allcities[0].name);
 // -----------------------------------------------------------------
 // Handling functions
 // -----------------------------------------------------------------
@@ -61,6 +67,7 @@ function changeSlide(sens) {
 }
 function switchCity() {
     themap.switchMap(cityselect.value);
+    citystations = new stations(cityselect.value);
 }
 
 
