@@ -3,6 +3,7 @@
 
     Mar 01 2022   Initial
     Mar 02 2022   Work on lat / long coordinates when creating the map
+    Mar 03 2022   Play with markers. 
 
 */
 export default class map {
@@ -63,6 +64,9 @@ export default class map {
       center: ol.proj.fromLonLat(this.city.coord),
       duration: 2000
     });
+    let markers = new OpenLayers.Layer.Markers( "Markers" );
+    this.map.addLayer(markers);
+    markers.addMarker(new OpenLayers.Marker(ol.proj.fromLonLat(this.city.coord)));    
   }
   // ----------------------------------------------- 
   getVersion() {
