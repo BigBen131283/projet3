@@ -14,7 +14,7 @@ import stations from './stations.js'
 export default class map {
 
   constructor () {
-    this.version = "map.js 1.20 Mar 05 2022 : "
+    this.version = "map.js 1.21 Mar 05 2022 : "
     this.zoom = 12; 
     this.map = null;
     this.mapquestkey = '	rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
@@ -29,19 +29,20 @@ export default class map {
       layers: L.mapquest.tileLayer('map'),
       zoom: this.zoom
     });
-    L.marker(selectedcity.coord).addTo(this.map)
-      .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-      .openPopup();
     this.log('Map created for ' + selectedcity.name + ' on ' + selectedcity.coord);
     return this;
   }
   // ----------------------------------------------- Switch the map when new city selected
   switchMap(selectedcity) {
+    this.cityname = selectedcity.name;
     this.map.setView(selectedcity.coord, this.zoom);
   }
   // ----------------------------------------------- 
-  displayStations(stations) {
+  displayStations(stations, selectedcity) {
     const nstations = stations.length;
+    L.marker(selectedcity.coord).addTo(this.map)
+      .bindPopup(this.cityname +  '<br>' + nstations)
+      .openPopup();
     this.log(`Now displaying ${this.cityname} stations (${nstations})`);
   }
   // ----------------------------------------------- 

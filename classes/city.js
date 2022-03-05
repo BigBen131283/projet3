@@ -22,7 +22,7 @@ export default class city {
       this.citystations = new stations(this.selectedcity.name);
       (async () => {
         await this.citystations.loadStations().then(message => {
-          this.themap.displayStations(this.citystations.getStations());
+          this.themap.displayStations(this.citystations.getStations(), this.selectedcity);
         })
       })()
     }
@@ -38,8 +38,13 @@ export default class city {
     return thecity;
   }
   // ----------------------------------------------- Get cities list
-  getPosition(cityname) {
-    
+  setPosition(cityname) {
+    this.selectedcity = this.checkRequestedCity(cityname);
+    this.themap.switchMap(this.selectedcity);
+    return;
+  }
+  // ----------------------------------------------- Get cities list
+  getPosition(cityname) {    
     return this.city.name;
   }
   // ----------------------------------------------- Get cities list

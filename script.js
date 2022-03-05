@@ -61,7 +61,8 @@ function changeSlide(sens) {
     document.getElementById("slide").src = slide[numero];
 }
 function switchCity() {
-    console.log('Switching to ' + cityselect.value)
+    console.log('Switching to ' + cityselect.value);
+    thecity.setPosition(cityselect.value);
 }
 
 
