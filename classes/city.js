@@ -40,7 +40,13 @@ export default class city {
   // ----------------------------------------------- Get cities list
   setPosition(cityname) {
     this.selectedcity = this.checkRequestedCity(cityname);
-    this.themap.switchMap(this.selectedcity);
+    this.citystations = new stations(this.selectedcity.name);
+    (async () => {
+      await this.citystations.loadStations().then(message => {
+        this.themap.displayStations(this.citystations.getStations(), this.selectedcity);
+      })
+    })()
+    // this.themap.switchMap(this.selectedcity);
     return;
   }
   // ----------------------------------------------- Get cities list

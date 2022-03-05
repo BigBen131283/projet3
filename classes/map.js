@@ -14,7 +14,7 @@ import stations from './stations.js'
 export default class map {
 
   constructor () {
-    this.version = "map.js 1.21 Mar 05 2022 : "
+    this.version = "map.js 1.22 Mar 05 2022 : "
     this.zoom = 12; 
     this.map = null;
     this.mapquestkey = '	rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
@@ -39,6 +39,7 @@ export default class map {
   }
   // ----------------------------------------------- 
   displayStations(stations, selectedcity) {
+    this.cityname = selectedcity.name;
     const nstations = stations.length;
     L.marker(selectedcity.coord).addTo(this.map)
       .bindPopup(this.cityname +  '<br>' + nstations)
