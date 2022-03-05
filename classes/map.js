@@ -10,63 +10,39 @@
 */
 
 import stations from './stations.js'
+
 export default class map {
 
   constructor () {
-    this.version = "map.js 1.17 Mar 05 2022 : "
-    this.availablecities = [
-      {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
-      {name: 'TOULOUSE', coord:  [43.5935069290371, 1.42988070604336 ] },
-      {name: 'BRUXELLES', coord:  [50.84177,4.38418] },
-    ];
+    this.version = "map.js 1.20 Mar 05 2022 : "
     this.zoom = 12; 
-    this.city = null;
     this.map = null;
     this.mapquestkey = '	rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
-  }
-  // ----------------------------------------------- Check city is in the supported list
-  checkRequestedCity(city) {
-    let thecity = { name: 'WORLD', coord: [0,0] };
-    for(let i = 0; i < this.availablecities.length; ++i) {
-      if(this.availablecities[i].name === city) {
-        thecity=  this.availablecities[i];
-        break;
-      }
-    }
-    return thecity;
-  }
-
-  // ----------------------------------------------- Get cities list
-  getCities() {
-    return this.availablecities;
-  }
-  // ----------------------------------------------- Get cities list
-  getCityName() {
-    return this.city.name;
+    this.cityname = null;
   }
   // ----------------------------------------------- Open Layer map
-  createMap(selectedcity = 'WORLD') {
-    this.city = this.checkRequestedCity(selectedcity) ;
+  createMap(selectedcity) {
+    this.cityname = selectedcity.name;
     L.mapquest.key = this.mapquestkey;
     this.map = L.mapquest.map('map', {
-      center: this.city.coord,
+      center: selectedcity.coord,
       layers: L.mapquest.tileLayer('map'),
       zoom: this.zoom
     });
-    L.marker(this.city.coord).addTo(this.map)
+    L.marker(selectedcity.coord).addTo(this.map)
       .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-      .openPopup();    
-    this.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
+      .openPopup();
+    this.log('Map created for ' + selectedcity.name + ' on ' + selectedcity.coord);
+    return this;
   }
   // ----------------------------------------------- Switch the map when new city selected
   switchMap(selectedcity) {
-    this.city = this.checkRequestedCity(selectedcity);
-    this.map.setView(this.city.coord, this.zoom);
+    this.map.setView(selectedcity.coord, this.zoom);
   }
   // ----------------------------------------------- 
   displayStations(stations) {
     const nstations = stations.length;
-    this.log(`Now displaying ${this.city.name} stations (${nstations})`);
+    this.log(`Now displaying ${this.cityname} stations (${nstations})`);
   }
   // ----------------------------------------------- 
   getVersion() {

@@ -8,19 +8,17 @@
     Mar 05 2022 Now start work on stations positionning to the selected map
 
 */
-import map from './classes/map.js'
-import stations from './classes/stations.js'
+import city from './classes/city.js'
 // -----------------------------------------------------------------
 // Initialization
 // -----------------------------------------------------------------
 const slide = ["/images/image1.jpg", "/images/image2.jpg", "/images/image3.jpg"];
 let numero = 0;
 let isPaused = false
-let interval = setInterval(autoDefil, 5000);
-let themap = new map();
-let allcities =themap.getCities();      // Get managed cities list
-let citystations = null;
+let thecity = new city();
+let allcities =thecity.getCities();      // Get managed cities list
 
+// Set some event in the web page
 let boutonPause = document.getElementById("pause_button");
 boutonPause.addEventListener('click', togglePause)
 document.getElementById("previous").addEventListener('click', () => changeSlide(-1))
@@ -34,15 +32,7 @@ for(let i = 0; i < allcities.length; i++) {
     option.value = option.innerHTML = allcities[i].name;
     cityselect.appendChild(option);
 }
-// Display the selected city map
-// Get the selected city stations
-themap.createMap(allcities[0].name);
-citystations = new stations(allcities[0].name);
-(async () => {
-    await citystations.loadStations().then(message => {
-        themap.displayStations(citystations.getStations());
-    })
-})()
+setInterval(autoDefil, 5000);
 // -----------------------------------------------------------------
 // Handling functions
 // -----------------------------------------------------------------
@@ -71,13 +61,7 @@ function changeSlide(sens) {
     document.getElementById("slide").src = slide[numero];
 }
 function switchCity() {
-    themap.switchMap(cityselect.value);
-    citystations = new stations(cityselect.value);
-    (async () => {
-        await citystations.loadStations().then(message => {
-            themap.displayStations(citystations.getStations());
-        })
-    })()
+    console.log('Switching to ' + cityselect.value)
 }
 
 
