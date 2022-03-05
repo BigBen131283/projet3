@@ -12,9 +12,9 @@ export default class map {
   constructor () {
     this.version = "map.js 1.16 Mar 04 2022"
     this.availablecities = [
-      {name: 'LYON', coord:  [ 4.8339838, 45.7569838 ] },
-      {name: 'TOULOUSE', coord:  [1.42988070604336, 43.5935069290371, ] },
-      {name: 'BRUXELLES', coord:  [4.38418,50.84177] },
+      {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
+      {name: 'TOULOUSE', coord:  [43.5935069290371, 1.42988070604336 ] },
+      {name: 'BRUXELLES', coord:  [50.84177,4.38418] },
     ];
     this.zoom = 12; 
     this.city = null;
@@ -42,9 +42,9 @@ export default class map {
     this.city = this.checkRequestedCity(selectedcity) ;
     L.mapquest.key = this.mapquestkey;
     L.mapquest.map('map', {
-      center: [37.7749, -122.4194],
+      center: this.city.coord,
       layers: L.mapquest.tileLayer('map'),
-      zoom: 12
+      zoom: this.zoom
     });    console.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
   }
   // ----------------------------------------------- Switch the map when new city selected
