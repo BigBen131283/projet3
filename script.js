@@ -5,6 +5,7 @@
     Mar 02 2022 Work on lat / long coordinates when creating the map
     Mar 03 2022 Include Toggle Pause code from main branch
                 Start work on API calls to JCDECAUX
+    Mar 05 2022 Now start work on stations positionning to the selected map
 
 */
 import map from './classes/map.js'
@@ -16,28 +17,32 @@ const slide = ["/images/image1.jpg", "/images/image2.jpg", "/images/image3.jpg"]
 let numero = 0;
 let isPaused = false
 let interval = setInterval(autoDefil, 5000);
-
+let themap = new map();
+let allcities =themap.getCities();      // Get managed cities list
+let citystations = null;
 
 let boutonPause = document.getElementById("pause_button");
 boutonPause.addEventListener('click', togglePause)
 document.getElementById("previous").addEventListener('click', () => changeSlide(-1))
 document.getElementById("next").addEventListener('click', () => changeSlide(1))
 let cityselect = document.getElementById("cityselect");
-cityselect.addEventListener('change', () => switchCity())
+cityselect.addEventListener('change', () => switchCity())       // Change city
 
 // Load the list box with supported cities
-let themap = new map();
-let citystations = null;
-let allcities =themap.getCities();
 for(let i = 0; i < allcities.length; i++) {
     let option = document.createElement('option');
     option.value = option.innerHTML = allcities[i].name;
     cityselect.appendChild(option);
 }
 // Display the selected city map
+// Get the selected city stations
 themap.createMap(allcities[0].name);
-// get the selected city stations
 citystations = new stations(allcities[0].name);
+(async () => {
+    await citystations.loadStations().then(message => {
+        themap.displayStations(citystations.getStations());
+    })
+})()
 // -----------------------------------------------------------------
 // Handling functions
 // -----------------------------------------------------------------
@@ -68,6 +73,11 @@ function changeSlide(sens) {
 function switchCity() {
     themap.switchMap(cityselect.value);
     citystations = new stations(cityselect.value);
+    (async () => {
+        await citystations.loadStations().then(message => {
+            themap.displayStations(citystations.getStations());
+        })
+    })()
 }
 
 

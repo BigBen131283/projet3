@@ -10,38 +10,32 @@ export default class stations {
   #apikey = "0b872e25a940eeebc3e9a35346780b1074916a8f";
 
   constructor (stationcontract) {
-      this.version = "stations.js 1.09 Mar 03 2022 : "
+      this.version = "stations.js 1.18 Mar 05 2022 : "
       this.stationcontract = stationcontract;
-      this.citystations =  this.getStations(stationcontract)
-                              .then ( response => {
-                                this.log(response.length + ' stations found in ' +
-                                  this.stationcontract);
-                              })
-                              .catch(error => {
-                                this.log(error)
-                              })      
+      this.citystations = {};
   }
   // ----------------------------------------------- 
   // Retrieve the json list of all stations for a 
   // given contract name
+  // This method is internal
   // ----------------------------------------------- 
-  getStations(stationcontract) {
-    let url = this.#urlbase + "?contract=" + stationcontract + "&apiKey=" + this.#apikey;
-    return new Promise((resolve, reject) => {
-        fetch(url)
-          .then( response => {
-            if(response.ok) {
-              resolve(response.json());
-            }
-            else {
-              reject('Error during station list fetch');
-            }
-          })
-          .catch( error => {
-            reject(error);
-          })  
-    })
+  async loadStations() {
+    let url = this.#urlbase + "?contract=" + this.stationcontract + "&apiKey=" + this.#apikey;
+    return fetch(url)
+      .then( response => {
+        return response.json();
+      })
+      .then( json =>  { 
+        this.citystations = json;
+        return "OK"
+      })
+      .catch (error => this.log(error))
   }
+  // ----------------------------------------------- 
+  getStations() {
+    return this.citystations;
+  }
+  
   // ----------------------------------------------- 
   getVersion() {
     return this.version;

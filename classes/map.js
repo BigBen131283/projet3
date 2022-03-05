@@ -8,10 +8,12 @@
     Mar 05 2022   Test MAPQUEST. 
 
 */
+
+import stations from './stations.js'
 export default class map {
 
   constructor () {
-    this.version = "map.js 1.17 Mar 05 2022"
+    this.version = "map.js 1.17 Mar 05 2022 : "
     this.availablecities = [
       {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
       {name: 'TOULOUSE', coord:  [43.5935069290371, 1.42988070604336 ] },
@@ -38,6 +40,10 @@ export default class map {
   getCities() {
     return this.availablecities;
   }
+  // ----------------------------------------------- Get cities list
+  getCityName() {
+    return this.city.name;
+  }
   // ----------------------------------------------- Open Layer map
   createMap(selectedcity = 'WORLD') {
     this.city = this.checkRequestedCity(selectedcity) ;
@@ -48,9 +54,9 @@ export default class map {
       zoom: this.zoom
     });
     L.marker(this.city.coord).addTo(this.map)
-    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-    .openPopup();    
-    console.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
+      .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+      .openPopup();    
+    this.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
   }
   // ----------------------------------------------- Switch the map when new city selected
   switchMap(selectedcity) {
@@ -58,8 +64,17 @@ export default class map {
     this.map.setView(this.city.coord, this.zoom);
   }
   // ----------------------------------------------- 
+  displayStations(stations) {
+    const nstations = stations.length;
+    this.log(`Now displaying ${this.city.name} stations (${nstations})`);
+  }
+  // ----------------------------------------------- 
   getVersion() {
     return this.version;
+  }
+  // ----------------------------------------------- 
+  log(message) {
+    console.log(this.version + message);
   }
 
 }
