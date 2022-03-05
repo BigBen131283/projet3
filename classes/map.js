@@ -5,12 +5,13 @@
     Mar 02 2022   Work on lat / long coordinates when creating the map
     Mar 03 2022   Play with markers. 
     Mar 04 2022   Test MAPQUEST. 
+    Mar 05 2022   Test MAPQUEST. 
 
 */
 export default class map {
 
   constructor () {
-    this.version = "map.js 1.16 Mar 04 2022"
+    this.version = "map.js 1.17 Mar 05 2022"
     this.availablecities = [
       {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
       {name: 'TOULOUSE', coord:  [43.5935069290371, 1.42988070604336 ] },
@@ -41,15 +42,20 @@ export default class map {
   createMap(selectedcity = 'WORLD') {
     this.city = this.checkRequestedCity(selectedcity) ;
     L.mapquest.key = this.mapquestkey;
-    L.mapquest.map('map', {
+    this.map = L.mapquest.map('map', {
       center: this.city.coord,
       layers: L.mapquest.tileLayer('map'),
       zoom: this.zoom
-    });    console.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
+    });
+    L.marker(this.city.coord).addTo(this.map)
+    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+    .openPopup();    
+    console.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
   }
   // ----------------------------------------------- Switch the map when new city selected
   switchMap(selectedcity) {
-    this.city = this.checkRequestedCity(selectedcity) ;
+    this.city = this.checkRequestedCity(selectedcity);
+    this.map.setView(this.city.coord, this.zoom);
   }
   // ----------------------------------------------- 
   getVersion() {
