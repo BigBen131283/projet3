@@ -38,6 +38,11 @@ export default class city {
     return thecity;
   }
   // ----------------------------------------------- Get cities list
+  getPosition(cityname) {
+    
+    return this.city.name;
+  }
+  // ----------------------------------------------- Get cities list
   getCityName() {
     return this.city.name;
   }
