@@ -4,21 +4,22 @@
     Mar 01 2022   Initial
     Mar 02 2022   Work on lat / long coordinates when creating the map
     Mar 03 2022   Play with markers. 
+    Mar 04 2022   Test MAPQUEST. 
 
 */
 export default class map {
 
   constructor () {
-    this.version = "map.js 1.13 Mar 02 2022"
+    this.version = "map.js 1.16 Mar 04 2022"
     this.availablecities = [
-      {name: 'LYON', coord:  [4.8339838, 45.7569838] },
+      {name: 'LYON', coord:  [ 4.8339838, 45.7569838 ] },
       {name: 'TOULOUSE', coord:  [1.42988070604336, 43.5935069290371, ] },
       {name: 'BRUXELLES', coord:  [4.38418,50.84177] },
     ];
-    this.zoomfactor = 12; 
+    this.zoom = 12; 
     this.city = null;
     this.map = null;
-    this.theview = null;
+    this.mapquestkey = '	rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
   }
   // ----------------------------------------------- Check city is in the supported list
   checkRequestedCity(city) {
@@ -39,34 +40,16 @@ export default class map {
   // ----------------------------------------------- Open Layer map
   createMap(selectedcity = 'WORLD') {
     this.city = this.checkRequestedCity(selectedcity) ;
-    this.theview = new ol.View({
-      center: ol.proj.fromLonLat(this.city.coord),
-      zoom: this.zoomfactor,
-    });
-    // If the city is WORLD (unfound city in the list), reduce zoom
-    if(this.city.name === 'WORLD')
-      this.zoomfactor = 2;
-    this.map = new ol.Map({
-        target: 'map',
-        layers: [
-          new ol.layer.Tile({
-              source: new ol.source.OSM()
-          })
-        ],
-        view: this.theview
-      });
-    console.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
+    L.mapquest.key = this.mapquestkey;
+    L.mapquest.map('map', {
+      center: [37.7749, -122.4194],
+      layers: L.mapquest.tileLayer('map'),
+      zoom: 12
+    });    console.log('Map created for ' + this.city.name + ' on ' + this.city.coord);
   }
   // ----------------------------------------------- Switch the map when new city selected
   switchMap(selectedcity) {
     this.city = this.checkRequestedCity(selectedcity) ;
-    this.theview.animate( {
-      center: ol.proj.fromLonLat(this.city.coord),
-      duration: 2000
-    });
-    let markers = new OpenLayers.Layer.Markers( "Markers" );
-    this.map.addLayer(markers);
-    markers.addMarker(new OpenLayers.Marker(ol.proj.fromLonLat(this.city.coord)));    
   }
   // ----------------------------------------------- 
   getVersion() {
