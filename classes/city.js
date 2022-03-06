@@ -46,7 +46,6 @@ export default class city {
         this.themap.displayStations(this.citystations.getStations(), this.selectedcity);
       })
     })()
-    // this.themap.switchMap(this.selectedcity);
     return;
   }
   // ----------------------------------------------- Get cities list
