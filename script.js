@@ -9,6 +9,10 @@
 
 */
 import city from './classes/city.js'
+
+const version = "script.js 1.35 Mar 06 2022 : "
+
+
 // -----------------------------------------------------------------
 // Initialization
 // -----------------------------------------------------------------
@@ -61,8 +65,11 @@ function changeSlide(sens) {
     document.getElementById("slide").src = slide[numero];
 }
 function switchCity() {
-    console.log('Switching to ' + cityselect.value);
+    log('Switching to ' + cityselect.value);
     thecity.setPosition(cityselect.value);
 }
-
+// ----------------------------------------------- 
+function log(message) {
+    console.log(version + message);
+}
 

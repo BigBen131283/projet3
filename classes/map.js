@@ -9,8 +9,6 @@
 
 */
 
-import stations from './stations.js'
-
 export default class map {
 
   constructor () {
