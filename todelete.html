@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todelete</title>
+</head>
+<body>
+    <h1>I'm here</h1>
+    <script>
+        let urlbase = "https://api.jcdecaux.com/vls/v1/stations";
+        let apikey = "0b872e25a940eeebc3e9a35346780b1074916a8f";
+        let resultat = {};
+
+        let url1 = urlbase + "?contract=" + "LYON" + "&apiKey=" + apikey; 
+        let url2 = urlbase + "?contract=TOULOUSE&apiKey=" + apikey; 
+        let req1 = fetch(url1)
+            .then( response => {
+                return response.json();
+            })
+            .then( json =>  { 
+                return(json);
+            })
+            .catch (error => {
+                console.log("Y a un putain de bug !!!!!");
+            })
+        let req2 = fetch(url2)
+            .then( response => {
+                return response.json();
+            })
+            .then( json =>  { 
+                return(json);
+            })
+            .catch (error => {
+                console.log("Y a un putain de bug !!!!!");
+            })
+
+        Promise.all([req1, req2])
+            .then( (results) => {
+                console.log("Stations dans LYON: " + results[0].length);
+                console.log("Stations dans TOULOUSE: " + results[1].length);
+            })
+            .catch( error => {
+                console.log(error)
+            })
+
+    </script>
+</body>
+</html>

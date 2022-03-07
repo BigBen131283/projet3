@@ -12,10 +12,9 @@
 export default class map {
 
   constructor () {
-    this.version = "map.js 1.23 Mar 06 2022 : "
-    this.zoom = 12; 
+    this.version = "map.js 1.25 Mar 06 2022 : "
     this.map = null;
-    this.mapquestkey = '	rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
+    this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = null;
   }
   // ----------------------------------------------- Open Layer map
@@ -25,8 +24,12 @@ export default class map {
     this.map = L.mapquest.map('map', {
       center: selectedcity.coord,
       layers: L.mapquest.tileLayer('map'),
-      zoom: this.zoom
+      zoom: 12,   // Zoom range from 1 to 18, the greater the more focused
+      minZoom: 10,
+      maxZoom: 16,
+      zoomlevelschange: this.zoomLevelChange,
     });
+    this.map.on('click', this.click);
     this.log('Map created for ' + selectedcity.name + ' on ' + selectedcity.coord);
     return this;
   }
@@ -41,6 +44,14 @@ export default class map {
     this.log(`Now displaying ${this.cityname} stations (${nstations})`);
   }
   // ----------------------------------------------- 
+  click(ev) {
+    console.log(ev.latlng); // ev is an event object (MouseEvent in this case)
+  };
+  // ----------------------------------------------- 
+  zoomLevelChange(event) {
+    console.log('Zoom level changed to : ' + event)
+  }
+  // ----------------------------------------------- 
   getVersion() {
     return this.version;
   }
@@ -48,5 +59,4 @@ export default class map {
   log(message) {
     console.log(this.version + message);
   }
-
 }
