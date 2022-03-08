@@ -15,7 +15,7 @@ export default class map {
   #defaultzoom = 12;
 
   constructor () {
-    this.version = "map.js 1.32 Mar 08 2022 : "
+    this.version = "map.js 1.33 Mar 08 2022 : "
     this.map = null;
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = null;
@@ -38,7 +38,9 @@ export default class map {
       'Satellite': L.mapquest.tileLayer('satellite'),
     }).addTo(this.map);
     L.control.scale({"imperial": false}).addTo(this.map);
-    this.map.on('click', this.click);               // Take some action on click
+    // When setting these handlers, we pass the optional 2nd argument so that "this"
+    // is accessible from within the handler
+    this.map.on('click', this.click, this);               // Take some action on click
     this.map.on('zoomanim',this.zoomLevelChange, this);   // Handle zoom change
     this.log('Map created for ' + selectedcity.name + ' on ' + selectedcity.coord);
     return this;
@@ -48,7 +50,7 @@ export default class map {
     this.cityname = selectedcity.name;
     const nstations = stations.length;
     L.marker(selectedcity.coord).addTo(this.map)
-      .bindPopup(this.cityname +  '<br>' + nstations)
+      .bindPopup(this.cityname +  '<br>' + nstations + ' available')
       .openPopup();
     this.map.setView(selectedcity.coord, this.zoom);
     this.log(`Now displaying ${this.cityname} stations (${nstations})`);
@@ -59,10 +61,12 @@ export default class map {
   // ----------------------------------------------- 
   click(clickevent) {
     console.log(clickevent.latlng); // clickevent is a MouseEvent object
+    this.map.setView(clickevent.latlng);
   };
   // ----------------------------------------------- 
   zoomLevelChange(zoomevent) {
     console.log( zoomevent.zoom);
+    this.currentzoom = zoomevent.zoom;
   }
    // ----------------------------------------------- 
   //  Misc
