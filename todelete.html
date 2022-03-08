@@ -35,11 +35,17 @@
             .catch (error => {
                 console.log("Y a un putain de bug !!!!!");
             })
+        let req3 = new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            resolve('Delay OK');
+                        }, 3000);
+                    });
 
-        Promise.all([req1, req2])
+        Promise.all([req1, req2, req3])
             .then( (results) => {
                 console.log("Stations dans LYON: " + results[0].length);
                 console.log("Stations dans TOULOUSE: " + results[1].length);
+                alert('req3 has been fullfilled');
             })
             .catch( error => {
                 console.log(error)
