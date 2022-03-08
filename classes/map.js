@@ -15,11 +15,12 @@ export default class map {
   #defaultzoom = 12;
 
   constructor () {
-    this.version = "map.js 1.33 Mar 08 2022 : "
+    this.version = "map.js 1.34 Mar 08 2022 : "
     this.map = null;
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = null;
     this.currentzoom = this.#defaultzoom;
+    this.latLngBounds = {};
   }
   // ----------------------------------------------- Mapquest / leaflet map
   createMap(selectedcity) {
@@ -42,6 +43,7 @@ export default class map {
     // is accessible from within the handler
     this.map.on('click', this.click, this);               // Take some action on click
     this.map.on('zoomanim',this.zoomLevelChange, this);   // Handle zoom change
+    this.latLngBounds = this.map.getBounds();
     this.log('Map created for ' + selectedcity.name + ' on ' + selectedcity.coord);
     return this;
   }
@@ -53,7 +55,23 @@ export default class map {
       .bindPopup(this.cityname +  '<br>' + nstations + ' available')
       .openPopup();
     this.map.setView(selectedcity.coord, this.zoom);
+    this.#countEligibleStations(stations);
     this.log(`Now displaying ${this.cityname} stations (${nstations})`);
+  }
+
+  #countEligibleStations(stations) {
+//    for(let i = 0; i < stations.length; ++i) {
+  console.log(this.latLngBounds);
+  console.log(this.latLngBounds._northEast + '/' + this.latLngBounds._southWest);
+  const latSouth = this.latLngBounds._southWest.lat;
+  const latNorth = this.latLngBounds._northEast.lat;
+  const longEast = this.latLngBounds._northEast.lng;
+  const longWest = this.latLngBounds._southWest.lng;
+  console.log('Search for points between ' + longWest + ' and ' + longEast + ' longitude')
+  console.log('Search for points between ' + latSouth + ' and ' + latNorth + ' latitude')
+  for(let i = 0; i < 5; ++i) {
+    console.log(stations[i].position)
+  }
   }
 
   // ----------------------------------------------- 
@@ -62,11 +80,13 @@ export default class map {
   click(clickevent) {
     console.log(clickevent.latlng); // clickevent is a MouseEvent object
     this.map.setView(clickevent.latlng);
+    this.latLngBounds = this.map.getBounds();
   };
   // ----------------------------------------------- 
   zoomLevelChange(zoomevent) {
     console.log( zoomevent.zoom);
     this.currentzoom = zoomevent.zoom;
+    this.latLngBounds = this.map.getBounds();
   }
    // ----------------------------------------------- 
   //  Misc
