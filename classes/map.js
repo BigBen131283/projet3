@@ -9,6 +9,7 @@
     Mar 08 2022   Test MAPQUEST. Play with controls, zoom, etc...
     Mar 09 2022   Test MAPQUEST. Study the drag map event
                   Stations are now managed by this class
+    Mar 10 2022   Finalize reorg
 
 */
 
@@ -18,16 +19,22 @@ export default class map {
   #defaultzoom = 12;
 
   constructor (selectedcity) {
-    this.version = "map.js 1.36 Mar 09 2022 : "
+    this.version = "map.js 1.40 Mar 10 2022 : "
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.currentzoom = this.#defaultzoom;
-    this.map = this.createMap(selectedcity);
-    this.citystations = new stations(this.cityname).loadStations();
-    this.displayStations();
+    this.map = null;
     this.center = [0,0];
-    this.latLngBounds = [];
+    this.latLngBounds = [];    
+    let loadstations = new stations(this.cityname).loadStations()
+      .then( (resp) => {
+        this.citystations = resp;
+        this.displayStations();
+      })
+      .catch( (error) => {
+        this.log(error);
+      });
   }
   // ----------------------------------------------- Mapquest / leaflet map
   createMap() {
@@ -53,30 +60,31 @@ export default class map {
     this.map.on('moveend', this.move, this);              // Handle dragging map
     this.latLngBounds = this.map.getBounds();
     this.log('Map created for ' + this.cityname + ' on ' + this.citycoordinates);
-    return this;
   }
   // ----------------------------------------------- 
   displayStations() {
-    L.marker(this.citycoordinates).addTo(this.map)
-      .bindPopup(this.cityname +  '<br>' + this.citystations.length + ' available')
-      .openPopup();
+    let citymarker = L.marker(this.citycoordinates, {
+      icon: L.mapquest.icons.marker(),
+      draggable: false
+    })
+    citymarker.bindPopup(this.cityname +  '<br>' + this.citystations.length + ' available');
+    citymarker.addTo(this.map);
     this.map.setView(this.citycoordinates, this.zoom);
     this.#countEligibleStations();
   }
 
   #countEligibleStations() {
-//    for(let i = 0; i < stations.length; ++i) {
-  console.log(this.latLngBounds);
-  console.log(this.latLngBounds._northEast + '/' + this.latLngBounds._southWest);
-  const latSouth = this.latLngBounds._southWest.lat;
-  const latNorth = this.latLngBounds._northEast.lat;
-  const longEast = this.latLngBounds._northEast.lng;
-  const longWest = this.latLngBounds._southWest.lng;
-  console.log('Search for points between ' + longWest + ' and ' + longEast + ' longitude')
-  console.log('Search for points between ' + latSouth + ' and ' + latNorth + ' latitude')
-  for(let i = 0; i < 5; ++i) {
-    console.log(this.citystations[i].position)
-  }
+    console.log(this.latLngBounds);
+    console.log(this.latLngBounds._northEast + '/' + this.latLngBounds._southWest);
+    const latSouth = this.latLngBounds._southWest.lat;
+    const latNorth = this.latLngBounds._northEast.lat;
+    const longEast = this.latLngBounds._northEast.lng;
+    const longWest = this.latLngBounds._southWest.lng;
+    console.log('Search for points between ' + longWest + ' and ' + longEast + ' longitude')
+    console.log('Search for points between ' + latSouth + ' and ' + latNorth + ' latitude')
+    for(let i = 0; i < 5; ++i) {
+      console.log(this.citystations[i].position)
+    }
   }
 
   // ----------------------------------------------- 

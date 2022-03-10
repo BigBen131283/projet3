@@ -3,6 +3,7 @@
 
     Mar 05 2022   Initial
     Mar 09 2022   Remove stations from this class
+    Mar 10 2022   Finalize reorg
 
 */
 
@@ -10,7 +11,7 @@ import map from './map.js';
 export default class city {
 
   constructor (cityname = 'WORLD') {
-      this.version = "city.js 1.08 Mar 09 2022 : "
+      this.version = "city.js 1.10 Mar 10 2022 : "
       // Some of the cities managed by JCDecaux
       this.availablecities = [
         {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
@@ -18,7 +19,7 @@ export default class city {
         {name: 'BRUXELLES', coord:  [50.84177,4.38418] },
       ];
       this.selectedcity = this.checkRequestedCity(this.availablecities[0].name);
-      this.themap = new map(this.selectedcity);
+      this.themap = new map(this.selectedcity).createMap();
     }
   // ----------------------------------------------- Check city is in the supported list
   checkRequestedCity(city) {
