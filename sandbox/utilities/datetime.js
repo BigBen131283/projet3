@@ -13,11 +13,12 @@
 //----------------------------------------------------------------------------
 // eslint-disable-next-line no-unused-vars
 
-    const Version = 'datetime:1.15, Mar 10 2022';
+    const Version = 'datetime:1.16, Mar 10 2022';
 
     const months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
     
-    export  { getDateTime, getDate, getTime, getHoursMinutes, getShortTime }
+    export  { getDateTime, getDate, getTime, getHoursMinutes, getShortTime, getHoursMinutesSeconds, 
+                    convertDateTime, convertSecondsToHMS }
     //----------------------------------------------------------------------------
     // Full date & time string 
     // syncmode set to TRUE if waiting for the I/O to complete
