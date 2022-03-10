@@ -139,12 +139,12 @@
             });
         };
         let citystations =  [];
-        function process(jsondata) {
+        function process(data) {
             log('-----------------------------------------------------------------');
             for(let index = 0; index < 3; ++index) {
-                log(jsondata[index].name)    
+                log(`${data[index].name} Address: ${data[index].address} Coordinates : ${data[index].position.lat} / ${data[index].position.lng}`)
             }
-            citystations = jsondata;
+            citystations = data;
             log('TOULOUSE exploits ' + citystations.length + ' stations');
         }
         // 1st call test with a declared function (process) as 3rd parameter
@@ -153,7 +153,7 @@
         urlmacro('Get LYON stations', callurl(url1), (data) => {
             log('-----------------------------------------------------------------');
             for(let index = 0; index < 3; ++index) {
-                log(data[index].name)
+                log(`${data[index].name} Address: ${data[index].address} Coordinates : ${data[index].position.lat} / ${data[index].position.lng}`)
             }
             log('LYON exploits ' + data.length + ' stations');
         });
