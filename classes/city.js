@@ -11,15 +11,19 @@ import map from './map.js';
 export default class city {
 
   constructor (cityname = 'WORLD') {
-      this.version = "city.js 1.10 Mar 10 2022 : "
+      this.version = "city.js 1.12 Mar 10 2022 : "
       // Some of the cities managed by JCDecaux
       this.availablecities = [
         {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
         {name: 'TOULOUSE', coord:  [43.5935069290371, 1.42988070604336 ] },
         {name: 'BRUXELLES', coord:  [50.84177,4.38418] },
+        {name: 'NANTES', coord:  [47.202127, -1.5787] },
+        {name: 'MARSEILLE', coord:  [43.25850879475187, 5.398913930872] },
+        {name: 'SEVILLE', coord:  [37.372322, -5.963171] },
       ];
       this.selectedcity = this.checkRequestedCity(this.availablecities[0].name);
-      this.themap = new map(this.selectedcity).createMap();
+      this.themap = new map(this.selectedcity);
+      this.themap.createMap();
     }
   // ----------------------------------------------- Check city is in the supported list
   checkRequestedCity(city) {
@@ -32,20 +36,21 @@ export default class city {
     }
     return thecity;
   }
-  // ----------------------------------------------- Get cities list
+  // ----------------------------------------------- Another city is selected
   setPosition(cityname) {
     this.selectedcity = this.checkRequestedCity(cityname);
+    this.themap.changeMap(this.selectedcity);
     return;
   }
-  // ----------------------------------------------- Get cities list
+  // ----------------------------------------------- 
   getPosition(cityname) {    
     return this.city.name;
   }
-  // ----------------------------------------------- Get cities list
+  // ----------------------------------------------- 
   getCityName() {
     return this.city.name;
   }
-  // ----------------------------------------------- Get cities list
+  // ----------------------------------------------- 
   getCities() {
     return this.availablecities;
   }

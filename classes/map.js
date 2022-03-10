@@ -19,7 +19,7 @@ export default class map {
   #defaultzoom = 12;
 
   constructor (selectedcity) {
-    this.version = "map.js 1.40 Mar 10 2022 : "
+    this.version = "map.js 1.41 Mar 10 2022 : "
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
@@ -61,6 +61,23 @@ export default class map {
     this.latLngBounds = this.map.getBounds();
     this.log('Map created for ' + this.cityname + ' on ' + this.citycoordinates);
   }
+  // ----------------------------------------------- 
+  changeMap(selectedcity) {
+    this.map.setView(selectedcity.coord);
+    this.cityname = selectedcity.name;
+    this.citycoordinates = selectedcity.coord;
+    this.currentzoom = this.#defaultzoom;
+    this.latLngBounds = this.map.getBounds();   
+    this.center = this.map.getCenter(); 
+    let loadstations = new stations(this.cityname).loadStations()
+      .then( (resp) => {
+        this.citystations = resp;
+        this.displayStations();
+      })
+      .catch( (error) => {
+        this.log(error);
+      });
+    }
   // ----------------------------------------------- 
   displayStations() {
     let citymarker = L.marker(this.citycoordinates, {
