@@ -53,6 +53,8 @@
 
         Promise.all([req1, req2, req3])
             .then( (results) => {
+                log('-----------------------------------------------------------------');
+                log('Promise.all results')
                 log("Stations dans LYON: " + results[0].length);
                 log("Stations dans TOULOUSE: " + results[1].length);
                 log('req3 has been fullfilled after 1 sec');
@@ -138,15 +140,18 @@
         };
         let citystations =  [];
         function process(jsondata) {
+            log('-----------------------------------------------------------------');
             for(let index = 0; index < 3; ++index) {
                 log(jsondata[index].name)    
             }
             citystations = jsondata;
             log('TOULOUSE exploits ' + citystations.length + ' stations');
         }
-        urlmacro('Calling url with macro', callurl(url2), process);
-        // Can also write this like that
-        urlmacro('Calling url with macro', callurl(url1), (data) => {
+        // 1st call test with a declared function (process) as 3rd parameter
+        urlmacro('Get TOULOUSE stations', callurl(url2), process);
+        // Can also write this like that with just an anonymous function
+        urlmacro('Get LYON stations', callurl(url1), (data) => {
+            log('-----------------------------------------------------------------');
             for(let index = 0; index < 3; ++index) {
                 log(data[index].name)
             }
