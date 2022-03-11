@@ -5,6 +5,7 @@
     Mar 05 2022   Tests
     Mar 09 2022   Change stations management logic.
     Mar 10 2022   Finalize reorg
+    Mar 11 2022   Station list is back to this object
 
 */
 export default class stations {
@@ -13,8 +14,9 @@ export default class stations {
   #apikey = "0b872e25a940eeebc3e9a35346780b1074916a8f";
 
   constructor (cityname) {
-      this.version = "stations.js 1.23 Mar 10 2022 : "
+      this.version = "stations.js 1.24 Mar 11 2022 : "
       this.cityname = cityname;
+      this.citystations = [];
   }
   // ----------------------------------------------- 
   // Retrieve the json list of all stations for a 
@@ -27,7 +29,8 @@ export default class stations {
       .then( response => {
         return response.json();
       })
-      .then( json =>  { 
+      .then( json =>  {
+        this.citystations = json;
         resolve(json);
       })
       .catch (error => {
@@ -36,6 +39,10 @@ export default class stations {
         }
       )
     })
+  }
+  // ----------------------------------------------- 
+  getStations() {
+    return this.citystations;
   }
   // ----------------------------------------------- 
   getVersion() {
