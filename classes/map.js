@@ -20,7 +20,7 @@ export default class map {
   #defaultzoom = 12;
 
   constructor (selectedcity) {
-    this.version = "map.js 1.44 Mar 11 2022 : "
+    this.version = "map.js 1.47 Mar 11 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -36,6 +36,15 @@ export default class map {
       .catch( (error) => {
         this.log(error);
       });
+    // Just for fun, get user position
+    // We could imagine to create the map directly on user position
+    // But his location will probably not be in a JCDECAUX managed city
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.myposition = [ position.coords.latitude, position.coords.longitude];
+      this.log(`You are located on these coordinates : ${this.myposition}`);
+    });
+    
+
   }
   // ----------------------------------------------- Mapquest / leaflet map
   createMap() {
@@ -92,7 +101,6 @@ export default class map {
   }
 
   #countEligibleStations(stationlist) {
-    console.log(this.latLngBounds);
     console.log(this.latLngBounds._northEast + '/' + this.latLngBounds._southWest);
     const latSouth = this.latLngBounds._southWest.lat;
     const latNorth = this.latLngBounds._northEast.lat;
