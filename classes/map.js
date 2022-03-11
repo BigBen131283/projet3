@@ -18,6 +18,8 @@ import stations from './stations.js';
 export default class map {
 
   #defaultzoom = 12;
+  #minzoom = 10;
+  #maxzoom = 18;
 
   constructor (selectedcity) {
     this.version = "map.js 1.47 Mar 11 2022 : "
@@ -54,8 +56,8 @@ export default class map {
       layers: L.mapquest.tileLayer('map'),
       zoom: this.currentzoom,     
                     // Zoom range from 1 to 18, the greater the more focused
-      minZoom: 10,  // No need to dezoom on the entire world
-      maxZoom: 16,  // No need to zoom on a single street
+      minZoom: this.#minzoom,  // No need to dezoom on the entire world
+      maxZoom: this.#maxzoom,  // No need to zoom on a single street
     });
     this.center = this.map.getCenter();
     L.control.layers({
