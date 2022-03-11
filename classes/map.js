@@ -108,9 +108,16 @@ export default class map {
     const longWest = this.latLngBounds._southWest.lng;
     console.log('Search for points between ' + longWest + ' and ' + longEast + ' longitude')
     console.log('Search for points between ' + latSouth + ' and ' + latNorth + ' latitude')
-    for(let i = 0; i < 5; ++i) {
-      console.log(stationlist[i].position)
+    let elligiblestations = 0;
+    for(let i = 0; i < stationlist.length; ++i) {
+      if(stationlist[i].position.lat > latSouth
+          && stationlist[i].position.lat < latNorth
+          && stationlist[i].position.lng > longWest
+          && stationlist[i].position.lng < longEast) {
+            ++elligiblestations;
+          }
     }
+    this.log(`There are ${elligiblestations} within this map boundaries`);
   }
 
   // ----------------------------------------------- 
