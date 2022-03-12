@@ -102,11 +102,24 @@ export default class map {
     let stationslist = this.thestations.getStations();
     let stationstodisplay = this.#countEligibleStations(stationslist);
     this.log(`There are ${stationstodisplay.length} within this map boundaries`);
+    let iconsize = 'lg';
+    if(stationstodisplay.length > 25) {
+      iconsize = 'sm'
+    }
     for(let i = 0; i < stationstodisplay.length; ++i) {
-      let citymarker = L.marker(stationstodisplay[i].position, {
-        icon: L.mapquest.icons.marker(),
-        draggable: false
-      })
+      let citymarker = L.marker(stationstodisplay[i].position, 
+          {
+            icon: L.mapquest.icons.circle(
+              {
+                primaryColor: '#2B29FF',    // Outer circle line
+                secondaryColor: '#3B5998',
+                shadow: true,
+                size: iconsize,
+                symbol: stationstodisplay[i].available_bikes
+              }
+            ),
+            draggable: false
+          })
       citymarker.bindPopup(stationstodisplay[i].name +  '<br>' + 
         stationstodisplay[i].available_bikes + ' bikes available');
       let layer = citymarker.addTo(this.map);
