@@ -4,6 +4,7 @@
     Mar 05 2022   Initial
     Mar 09 2022   Remove stations from this class
     Mar 10 2022   Finalize reorg
+    Mar 12 2022   Add Hossegor ;-)
 
 */
 
@@ -11,7 +12,7 @@ import map from './map.js';
 export default class city {
 
   constructor (cityname = 'WORLD') {
-      this.version = "city.js 1.12 Mar 10 2022 : "
+      this.version = "city.js 1.13 Mar 12 2022 : "
       // Some of the cities managed by JCDecaux
       this.availablecities = [
         {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
@@ -20,6 +21,7 @@ export default class city {
         {name: 'NANTES', coord:  [47.202127, -1.5787] },
         {name: 'MARSEILLE', coord:  [43.25850879475187, 5.398913930872] },
         {name: 'SEVILLE', coord:  [37.372322, -5.963171] },
+        {name: 'HOSSEGOR', coord:  [43.6649007, -1.4347417] },
       ];
       this.selectedcity = this.checkRequestedCity(this.availablecities[0].name);
       this.themap = new map(this.selectedcity);
