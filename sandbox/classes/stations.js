@@ -29,7 +29,6 @@ export default class stations {
     for(let i = 0; i < nstations; ++i) {
       this.stations.push( { "name": "station#-" + i, "coord": [ 2*i, 4*i] } );
     }
-    console.log(this.stations)
     this.log(this.stations.length + " stations added to this map (" + this.mapname + ")")
   }
   // -----------------------------------------------------------------

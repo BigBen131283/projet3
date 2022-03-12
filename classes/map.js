@@ -11,6 +11,7 @@
                   Stations are now managed by this class
     Mar 10 2022   Finalize reorg
     Mar 11 2022   Station list is now managed by stations object
+    Mar 12 2022   Change the click and zoom handlers code
 
 */
 
@@ -22,14 +23,15 @@ export default class map {
   #maxzoom = 18;
 
   constructor (selectedcity) {
-    this.version = "map.js 1.47 Mar 11 2022 : "
+    this.version = "map.js 1.49 Mar 12 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
     this.currentzoom = this.#defaultzoom;
     this.map = null;
     this.center = [0,0];
-    this.latLngBounds = [];    
+    this.latLngBounds = [];
+    this.markers = [];      // Manage markers displayed on the map
     this.thestations = new stations(this.cityname);
     this.thestations.loadStations()
       .then( (resp) => {
@@ -92,34 +94,41 @@ export default class map {
   }
   // ----------------------------------------------- 
   displayStations() {
+    // Clear all markers from map
+    for(let i = 0; i < this.markers.length; ++i) {
+      this.markers[i].remove();
+    }
+    // Get stations and search for those to be displayed
     let stationslist = this.thestations.getStations();
-    let citymarker = L.marker(this.citycoordinates, {
-      icon: L.mapquest.icons.marker(),
-      draggable: false
-    })
-    citymarker.bindPopup(this.cityname +  '<br>' + stationslist.length + ' available');
-    citymarker.addTo(this.map);
-    this.#countEligibleStations(stationslist);
+    let stationstodisplay = this.#countEligibleStations(stationslist);
+    this.log(`There are ${stationstodisplay.length} within this map boundaries`);
+    for(let i = 0; i < stationstodisplay.length; ++i) {
+      let citymarker = L.marker(stationstodisplay[i].position, {
+        icon: L.mapquest.icons.marker(),
+        draggable: false
+      })
+      citymarker.bindPopup(stationstodisplay[i].name +  '<br>' + 
+        stationstodisplay[i].available_bikes + ' bikes available');
+      let layer = citymarker.addTo(this.map);
+      this.markers.push(layer);
+    }
   }
 
   #countEligibleStations(stationlist) {
-    console.log(this.latLngBounds._northEast + '/' + this.latLngBounds._southWest);
+    let displayedstations = [];
     const latSouth = this.latLngBounds._southWest.lat;
     const latNorth = this.latLngBounds._northEast.lat;
     const longEast = this.latLngBounds._northEast.lng;
     const longWest = this.latLngBounds._southWest.lng;
-    console.log('Search for points between ' + longWest + ' and ' + longEast + ' longitude')
-    console.log('Search for points between ' + latSouth + ' and ' + latNorth + ' latitude')
-    let elligiblestations = 0;
     for(let i = 0; i < stationlist.length; ++i) {
       if(stationlist[i].position.lat > latSouth
           && stationlist[i].position.lat < latNorth
           && stationlist[i].position.lng > longWest
           && stationlist[i].position.lng < longEast) {
-            ++elligiblestations;
+            displayedstations.push(stationlist[i]);
           }
     }
-    this.log(`There are ${elligiblestations} within this map boundaries`);
+    return displayedstations;
   }
 
   // ----------------------------------------------- 
@@ -129,17 +138,12 @@ export default class map {
     this.citycoordinates = clickevent.latlng;
     // We decided to center the map on the clicked position
     // That was not specified in the customer request
-    this.map.setView(this.citycoordinates, this.zoom);
-    this.latLngBounds = this.map.getBounds();
-    this.center = this.map.getCenter();
-    this.displayStations();
+    // This action will trigger a mov event, so move() will be called
+    this.map.setView(this.citycoordinates, this.zoom); 
   };
   // ----------------------------------------------- 
   zoomLevelChange(zoomevent) {
     this.currentzoom = zoomevent.zoom;
-    this.latLngBounds = this.map.getBounds();
-    this.center = this.map.getCenter();
-    this.displayStations();
   }
   // ----------------------------------------------- 
   move(moveevent) {
