@@ -1,39 +1,38 @@
 /*
-    city.js
+    vehicle.js
 
-    Mar 11 2022 Initial
+    Mar 12 2022 Initial
 
 */
 
 import { getDateTime  } from '../utilities/datetime.js';
-import onemap from './onemap.js';
 
-export default class city {
+export default class vehicle {
 
-   #version = " [ city.js 1.00 Mar 11 2022 ] "
 
+   #version = " [ vehicle.js 1.00 Mar 12 2022 ] "
   // -----------------------------------------------------------------
   // Initialization
   // -----------------------------------------------------------------
-  constructor (cityname) {
-    this.cityname = cityname;
-    this.map = new onemap(cityname + "-MAP");
-    this.log("City Constructor executed" );
-    this.log("An associated map has been created : " + this.map.getMapName());
+  constructor(color, weight, maxspeed, price) {
+    this.color = color;
+    this.weight = weight;
+    this.maxspeed = maxspeed;
+    this.price = price;
+    this.log("Vehicle constructor called");
   }
   // -----------------------------------------------------------------
   //  Getters
   // -----------------------------------------------------------------
-  getCityName() {
-    return this.cityname;
-  }
-  getVersion() {
-    return this.#version;
-  }
+  getWeight() { return this.weight}
+  getColor() { return this.color}
+  getMaxpeed() { return this.maxspeed}
+  getPrice() { return this.price}
+  getVersion() { return this.#version}
   // -----------------------------------------------------------------
   //  Log
   // -----------------------------------------------------------------
   log(message) {
     console.log(getDateTime() + this.#version + message);
-  }
+  } 
 }
