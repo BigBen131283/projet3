@@ -12,6 +12,7 @@
     Mar 10 2022   Finalize reorg
     Mar 11 2022   Station list is now managed by stations object
     Mar 12 2022   Change the click and zoom handlers code
+    Mar 13 2022   Stations display is now dependent of the zoom factor
 
 */
 
@@ -21,9 +22,13 @@ export default class map {
   #defaultzoom = 12;
   #minzoom = 10;
   #maxzoom = 18;
+  #primarycolor = '#2B29FF';  // Station circle display colors
+  #secondarycolor = '#3B5998';
+  #inactivecolor = '#EB1C41';
+  #limitstations = 80;       // Do not display more stations on the map
 
   constructor (selectedcity) {
-    this.version = "map.js 1.49 Mar 12 2022 : "
+    this.version = "map.js 1.50 Mar 13 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -101,18 +106,36 @@ export default class map {
     // Get stations and search for those to be displayed
     let stationslist = this.thestations.getStations();
     let stationstodisplay = this.#countEligibleStations(stationslist);
-    this.log(`There are ${stationstodisplay.length} within this map boundaries`);
-    let iconsize = 'lg';
-    if(stationstodisplay.length > 25) {
-      iconsize = 'sm'
+    let nbstations = stationstodisplay.length;
+    // Limit the number of displayed stations
+    if(nbstations > this.#limitstations) {
+      nbstations = this.#limitstations;
     }
-    for(let i = 0; i < stationstodisplay.length; ++i) {
+    this.log(`${nbstations}/${stationstodisplay.length} within map boundaries: zoom : ${this.currentzoom}`);
+    let iconsize;
+    if(nbstations < 25) {
+      iconsize = 'lg';
+    }
+    else { 
+      if(nbstations < 150) {
+        iconsize = 'md';
+      }
+      else {
+        iconsize = 'sm';
+      }
+    }
+    for(let i = 0; i < nbstations; ++i) {
+      let primecolor = this.#primarycolor;
+      let secondcolor = this.#secondarycolor;
+      if(stationstodisplay[i].available_bikes === 0) {
+        let primecolor = secondcolor = this.#inactivecolor;
+      }
       let citymarker = L.marker(stationstodisplay[i].position, 
           {
             icon: L.mapquest.icons.circle(
               {
-                primaryColor: '#2B29FF',    // Outer circle line
-                secondaryColor: '#3B5998',
+                primaryColor: primecolor,    // Outer circle line
+                secondaryColor: secondcolor,
                 shadow: true,
                 size: iconsize,
                 symbol: stationstodisplay[i].available_bikes
