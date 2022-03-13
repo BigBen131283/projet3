@@ -6,11 +6,12 @@
     Mar 03 2022 Include Toggle Pause code from main branch
                 Start work on API calls to JCDECAUX
     Mar 05 2022 Now start work on stations positionning to the selected map
+    Mar 13 2022 Handle click on RESA button
 
 */
 import city from './classes/city.js'
 
-const version = "script.js 1.35 Mar 06 2022 : "
+const version = "script.js 1.36 Mar 13 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -23,11 +24,12 @@ let allcities =thecity.getCities();      // Get managed cities list
 
 // Set some event in the web page
 let boutonPause = document.getElementById("pause_button");
-boutonPause.addEventListener('click', togglePause)
-document.getElementById("previous").addEventListener('click', () => changeSlide(-1))
-document.getElementById("next").addEventListener('click', () => changeSlide(1))
+boutonPause.addEventListener('click', togglePause);
+document.getElementById("previous").addEventListener('click', () => changeSlide(-1));
+document.getElementById("next").addEventListener('click', () => changeSlide(1));
 let cityselect = document.getElementById("cityselect");
-cityselect.addEventListener('change', () => switchCity())       // Change city
+cityselect.addEventListener('change', () => switchCity());       // Change city
+document.getElementById("resa").addEventListener('click', () => reserveBike());
 
 // Load the list box with supported cities
 for(let i = 0; i < allcities.length; i++) {
@@ -39,6 +41,10 @@ setInterval(autoDefil, 5000);
 // -----------------------------------------------------------------
 // Handling functions
 // -----------------------------------------------------------------
+function reserveBike() {
+    log('Now book a bike on this station ' + JSON.stringify(thecity.getSelectedStation()));
+
+}
 function togglePause() {
     isPaused = !isPaused
     if (isPaused === true){

@@ -45,6 +45,10 @@ export default class city {
     return;
   }
   // ----------------------------------------------- 
+  getSelectedStation() {    
+    return this.themap.getSelectedStation();
+  }
+  // ----------------------------------------------- 
   getPosition(cityname) {    
     return this.city.name;
   }

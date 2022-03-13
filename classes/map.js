@@ -28,7 +28,7 @@ export default class map {
   #limitstations = 80;       // Do not display more stations on the map
 
   constructor (selectedcity) {
-    this.version = "map.js 1.51 Mar 13 2022 : "
+    this.version = "map.js 1.52 Mar 13 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -46,6 +46,7 @@ export default class map {
       .catch( (error) => {
         this.log(error);
       });
+    this.stationdetails = {};           // Currently seelcted station in the interface
     // Just for fun, get user position
     // We could imagine to create the map directly on user position
     // But his location will probably not be in a JCDECAUX managed city
@@ -83,6 +84,7 @@ export default class map {
   }
   // ----------------------------------------------- 
   changeMap(selectedcity) {
+    this.#cleanupStationUI();       // Clear all station fields as the map changes
     this.map.setView(selectedcity.coord);
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -143,17 +145,16 @@ export default class map {
           })
       citymarker.bindPopup(this.stationstodisplay[i].name);
       // Sorry, have to put handler code here as there is no access to "this"
-      // code is in an external function
+      // if the code is located in external function
       citymarker.on('click',(e) => {
-        console.log(`Get this station ${e.sourceTarget.options.title} data`);
-        let stationdetails = {};
+        this.stationdetails = {};
         // Should ALWAYS find the station as this function call
         // is triggered by a mouse event on the station !
         for(let i = 0; i < this.stationstodisplay.length; ++i) {
           if(this.stationstodisplay[i].number === e.sourceTarget.options.title)
-            stationdetails = this.stationstodisplay[i];
+            this.stationdetails = this.stationstodisplay[i];
         }
-        this.#updateStationUI(stationdetails);
+        this.#updateStationUI(this.stationdetails);
       });
       // Add station marker to the map and memorize it in the array
       // for later cleanup
@@ -161,6 +162,7 @@ export default class map {
       this.markers.push(layer);
     }
   }
+  // ----------------------------------------------- 
   #updateStationUI(thestation) {
     document.getElementById("address").innerText = 
         (thestation.address === "" ? thestation.name : thestation.address);
@@ -170,7 +172,23 @@ export default class map {
         thestation.available_bike_stands;
     document.getElementById("remain_bikes").innerText = 
         thestation.available_bikes;
- }
+    // If the selected station has no available bike, no need to 
+    // permit a reservation so disable the button
+    let resabutton = document.getElementById("resa");
+    if(thestation.available_bikes === 0)
+      resabutton.disabled = true;
+    else
+      resabutton.disabled = false;
+  }
+  // ----------------------------------------------- 
+  #cleanupStationUI() {
+    document.getElementById("address").innerText = "";
+    document.getElementById("all_places").innerText = "";
+    document.getElementById("remain_places").innerText = ""; 
+    document.getElementById("remain_bikes").innerText = "";
+    document.getElementById("resa").disabled = true;
+  }
+  // ----------------------------------------------- 
   #countEligibleStations(stationlist) {
     let displayedstations = [];
     const latSouth = this.latLngBounds._southWest.lat;
@@ -187,7 +205,10 @@ export default class map {
     }
     return displayedstations;
   }
-
+  // ----------------------------------------------- 
+  getSelectedStation() {
+    return  this.stationdetails;
+  }
   // ----------------------------------------------- 
   //  Some map event handlers
   // ----------------------------------------------- 
