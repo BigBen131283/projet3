@@ -28,7 +28,7 @@ export default class map {
   #limitstations = 80;       // Do not display more stations on the map
 
   constructor (selectedcity) {
-    this.version = "map.js 1.50 Mar 13 2022 : "
+    this.version = "map.js 1.51 Mar 13 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -38,6 +38,7 @@ export default class map {
     this.latLngBounds = [];
     this.markers = [];      // Manage markers displayed on the map
     this.thestations = new stations(this.cityname);
+    this.stationstodisplay = [];
     this.thestations.loadStations()
       .then( (resp) => {
         this.displayStations();
@@ -105,51 +106,71 @@ export default class map {
     }
     // Get stations and search for those to be displayed
     let stationslist = this.thestations.getStations();
-    let stationstodisplay = this.#countEligibleStations(stationslist);
-    let nbstations = stationstodisplay.length;
+    this.stationstodisplay = this.#countEligibleStations(stationslist);
+    let nbstations = this.stationstodisplay.length;
     // Limit the number of displayed stations
     if(nbstations > this.#limitstations) {
       nbstations = this.#limitstations;
     }
-    this.log(`${nbstations}/${stationstodisplay.length} within map boundaries: zoom : ${this.currentzoom}`);
+    this.log(`${nbstations}/${this.stationstodisplay.length} within map boundaries: zoom : ${this.currentzoom}`);
     let iconsize;
-    if(nbstations < 25) {
-      iconsize = 'lg';
-    }
+    if(nbstations < 25) {iconsize = 'lg';}
     else { 
-      if(nbstations < 150) {
-        iconsize = 'md';
-      }
-      else {
-        iconsize = 'sm';
-      }
+      if(nbstations < 150) { iconsize = 'md';}
+      else { iconsize = 'sm';}
     }
+    // The display loop
     for(let i = 0; i < nbstations; ++i) {
       let primecolor = this.#primarycolor;
       let secondcolor = this.#secondarycolor;
-      if(stationstodisplay[i].available_bikes === 0) {
-        let primecolor = secondcolor = this.#inactivecolor;
+      if(this.stationstodisplay[i].available_bikes === 0) {
+        primecolor = secondcolor = this.#inactivecolor;
       }
-      let citymarker = L.marker(stationstodisplay[i].position, 
+      let citymarker = L.marker(this.stationstodisplay[i].position, 
           {
             icon: L.mapquest.icons.circle(
               {
-                primaryColor: primecolor,    // Outer circle line
-                secondaryColor: secondcolor,
+                primaryColor: primecolor,     // Outer circle line ?
+                secondaryColor: secondcolor,  // Circle color ?
                 shadow: true,
                 size: iconsize,
-                symbol: stationstodisplay[i].available_bikes
+                symbol: this.stationstodisplay[i].available_bikes
               }
             ),
-            draggable: false
+            draggable: false,
+            clickable: true,
+            title: this.stationstodisplay[i].number,
           })
-      citymarker.bindPopup(stationstodisplay[i].name +  '<br>' + 
-        stationstodisplay[i].available_bikes + ' bikes available');
+      citymarker.bindPopup(this.stationstodisplay[i].name);
+      // Sorry, have to put handler code here as there is no access to "this"
+      // code is in an external function
+      citymarker.on('click',(e) => {
+        console.log(`Get this station ${e.sourceTarget.options.title} data`);
+        let stationdetails = {};
+        // Should ALWAYS find the station as this function call
+        // is triggered by a mouse event on the station !
+        for(let i = 0; i < this.stationstodisplay.length; ++i) {
+          if(this.stationstodisplay[i].number === e.sourceTarget.options.title)
+            stationdetails = this.stationstodisplay[i];
+        }
+        this.#updateStationUI(stationdetails);
+      });
+      // Add station marker to the map and memorize it in the array
+      // for later cleanup
       let layer = citymarker.addTo(this.map);
       this.markers.push(layer);
     }
   }
-
+  #updateStationUI(thestation) {
+    document.getElementById("address").innerText = 
+        (thestation.address === "" ? thestation.name : thestation.address);
+    document.getElementById("all_places").innerText = 
+        thestation.bike_stands;
+    document.getElementById("remain_places").innerText = 
+        thestation.available_bike_stands;
+    document.getElementById("remain_bikes").innerText = 
+        thestation.available_bikes;
+ }
   #countEligibleStations(stationlist) {
     let displayedstations = [];
     const latSouth = this.latLngBounds._southWest.lat;
