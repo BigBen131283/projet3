@@ -89,9 +89,10 @@ h1, h4
     padding-right: 6px;
 }
 
-form
+#resaform
 {
     max-width: 300px;
+    margin-bottom: .5rem;
 }
 
 .line
