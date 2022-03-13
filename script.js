@@ -11,11 +11,12 @@
 */
 import city from './classes/city.js'
 
-const version = "script.js 1.36 Mar 13 2022 : "
+const version = "script.js 1.38 Mar 13 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
 // -----------------------------------------------------------------
+log('Full reload');
 const slide = ["/images/image1.jpg", "/images/image2.jpg", "/images/image3.jpg"];
 let numero = 0;
 let isPaused = false
@@ -42,8 +43,7 @@ setInterval(autoDefil, 5000);
 // Handling functions
 // -----------------------------------------------------------------
 function reserveBike() {
-    log('Now book a bike on this station ' + JSON.stringify(thecity.getSelectedStation()));
-
+    thecity.reserveBike();
 }
 function togglePause() {
     isPaused = !isPaused

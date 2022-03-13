@@ -12,7 +12,7 @@ import map from './map.js';
 export default class city {
 
   constructor (cityname = 'WORLD') {
-      this.version = "city.js 1.13 Mar 12 2022 : "
+      this.version = "city.js 1.14 Mar 12 2022 : "
       // Some of the cities managed by JCDecaux
       this.availablecities = [
         {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
@@ -45,8 +45,8 @@ export default class city {
     return;
   }
   // ----------------------------------------------- 
-  getSelectedStation() {    
-    return this.themap.getSelectedStation();
+  reserveBike() {
+    this.themap.reserveBike();
   }
   // ----------------------------------------------- 
   getPosition(cityname) {    

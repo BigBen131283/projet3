@@ -54,8 +54,6 @@ export default class map {
       this.myposition = [ position.coords.latitude, position.coords.longitude];
       this.log(`You are located on these coordinates : ${this.myposition}`);
     });
-    
-
   }
   // ----------------------------------------------- Mapquest / leaflet map
   createMap() {
@@ -106,6 +104,7 @@ export default class map {
     for(let i = 0; i < this.markers.length; ++i) {
       this.markers[i].remove();
     }
+    this.markers = [];
     // Get stations and search for those to be displayed
     let stationslist = this.thestations.getStations();
     this.stationstodisplay = this.#countEligibleStations(stationslist);
@@ -206,8 +205,46 @@ export default class map {
     return displayedstations;
   }
   // ----------------------------------------------- 
-  getSelectedStation() {
-    return  this.stationdetails;
+  reserveBike() {
+    this.log(`Search marker ${this.stationdetails.number}` );
+    // Identify the marker to be modified by the reservation action
+    for(let i = 0; i < this.markers.length; ++i) {
+      if(this.markers[i].options.title === this.stationdetails.number) {
+        this.stationdetails.available_bikes--;
+        this.markers[i].remove();     // have to update the UI with -1 bike
+        // Display the modified marker
+        let iconsize;
+        let nbstations = this.markers.length;
+        if(nbstations < 25) {iconsize = 'lg';}
+        else { 
+          if(nbstations < 150) { iconsize = 'md';}
+          else { iconsize = 'sm';}
+        }
+        let primecolor = this.#primarycolor;
+        let secondcolor = this.#secondarycolor;
+        if(this.stationstodisplay[i].available_bikes === 0) {
+          primecolor = secondcolor = this.#inactivecolor;
+        }
+          let citymarker = L.marker(this.stationdetails.position, 
+          {
+            icon: L.mapquest.icons.circle(
+              {
+                primaryColor: primecolor,     // Outer circle line ?
+                secondaryColor: secondcolor,  // Circle color ?
+                shadow: true,
+                size: iconsize,
+                symbol: this.stationdetails.available_bikes
+              }
+            ),
+            draggable: false,
+            clickable: true,
+            title: this.stationdetails.number,
+          })
+        citymarker.bindPopup(this.stationdetails.name);
+        citymarker.addTo(this.map);
+        this.#updateStationUI(this.stationdetails);
+      }
+    }
   }
   // ----------------------------------------------- 
   //  Some map event handlers
