@@ -100,12 +100,12 @@ export default class map {
   }
   // ----------------------------------------------- 
   displayStations() {
-    // Clear all markers from map
+    // Clear all markers from map if any and clear the markers array
     for(let i = 0; i < this.markers.length; ++i) {
       this.markers[i].remove();
     }
     this.markers = [];
-    // Get stations and search for those to be displayed
+    // Get already loaded stations and search for those to be displayed
     let stationslist = this.thestations.getStations();
     this.stationstodisplay = this.#countEligibleStations(stationslist);
     let nbstations = this.stationstodisplay.length;
@@ -156,7 +156,7 @@ export default class map {
         this.#updateStationUI(this.stationdetails);
       });
       // Add station marker to the map and memorize it in the array
-      // for later cleanup
+      // for event handling and later cleanup
       let layer = citymarker.addTo(this.map);
       this.markers.push(layer);
     }
