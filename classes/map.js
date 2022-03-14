@@ -13,6 +13,7 @@
     Mar 11 2022   Station list is now managed by stations object
     Mar 12 2022   Change the click and zoom handlers code
     Mar 13 2022   Stations display is now dependent of the zoom factor
+    Mar 14 2022   Some code optimization
 
 */
 
@@ -22,13 +23,15 @@ export default class map {
   #defaultzoom = 12;
   #minzoom = 10;
   #maxzoom = 18;
-  #primarycolor = '#2B29FF';  // Station circle display colors
+  #primarycolor = '#2B29FF';            // Station circle display colors
   #secondarycolor = '#3B5998';
   #inactivecolor = '#EB1C41';
-  #limitstations = 80;       // Do not display more stations on the map
-
+  #limitstations = 80;                  // Do not display more stations on the map
+  // ----------------------------------------------- 
+  //  Class constructor
+  // ----------------------------------------------- 
   constructor (selectedcity) {
-    this.version = "map.js 1.52 Mar 13 2022 : "
+    this.version = "map.js 1.55 Mar 14 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -101,48 +104,25 @@ export default class map {
   // ----------------------------------------------- 
   displayStations() {
     // Clear all markers from map if any and clear the markers array
-    for(let i = 0; i < this.markers.length; ++i) {
-      this.markers[i].remove();
-    }
+    for(let i = 0; i < this.markers.length; ++i) { this.markers[i].remove(); }
     this.markers = [];
     // Get already loaded stations and search for those to be displayed
     let stationslist = this.thestations.getStations();
     this.stationstodisplay = this.#countEligibleStations(stationslist);
     let nbstations = this.stationstodisplay.length;
     // Limit the number of displayed stations
-    if(nbstations > this.#limitstations) {
-      nbstations = this.#limitstations;
-    }
+    if(nbstations > this.#limitstations) { nbstations = this.#limitstations;}
     this.log(`${nbstations}/${this.stationstodisplay.length} within map boundaries: zoom : ${this.currentzoom}`);
-    let iconsize;
-    if(nbstations < 25) {iconsize = 'lg';}
-    else { 
-      if(nbstations < 150) { iconsize = 'md';}
-      else { iconsize = 'sm';}
-    }
     // The display loop
     for(let i = 0; i < nbstations; ++i) {
-      let primecolor = this.#primarycolor;
-      let secondcolor = this.#secondarycolor;
-      if(this.stationstodisplay[i].available_bikes === 0) {
-        primecolor = secondcolor = this.#inactivecolor;
-      }
+      // Create the marker and bind its popup
       let citymarker = L.marker(this.stationstodisplay[i].position, 
           {
-            icon: L.mapquest.icons.circle(
-              {
-                primaryColor: primecolor,     // Outer circle line ?
-                secondaryColor: secondcolor,  // Circle color ?
-                shadow: true,
-                size: iconsize,
-                symbol: this.stationstodisplay[i].available_bikes
-              }
-            ),
+            icon: this.#createStationIcon(nbstations, this.stationstodisplay[i].available_bikes),
             draggable: false,
             clickable: true,
             title: this.stationstodisplay[i].number,
-          })
-      citymarker.bindPopup(this.stationstodisplay[i].name);
+          }).bindPopup(this.stationstodisplay[i].name);
       // Sorry, have to put handler code here as there is no access to "this"
       // if the code is located in external function
       citymarker.on('click',(e) => {
@@ -155,11 +135,57 @@ export default class map {
         }
         this.#updateStationUI(this.stationdetails);
       });
-      // Add station marker to the map and memorize it in the array
-      // for event handling and later cleanup
-      let layer = citymarker.addTo(this.map);
-      this.markers.push(layer);
+      // Add station marker returned by addTo() to the map and memorize it in
+      // markers  the array for event handling and later cleanup
+      this.markers.push(citymarker.addTo(this.map));
     }
+  }
+  // ----------------------------------------------- 
+  reserveBike() {
+    this.log(`Search marker ${this.stationdetails.number}` );
+    // Identify the marker to be modified by the reservation action
+    for(let i = 0; i < this.markers.length; ++i) {
+      if(this.markers[i].options.title === this.stationdetails.number) {
+        this.stationdetails.available_bikes--;
+        // Update the UI with -1 bike, so remove it
+        this.markers[i].remove();
+        // And redisplay the modified marker
+        let nbstations = this.markers.length;
+        let citymarker = L.marker(this.stationdetails.position, 
+          {
+            icon: this.#createStationIcon(nbstations, this.stationdetails.available_bikes),
+            draggable: false,
+            clickable: true,
+            title: this.stationdetails.number,
+          }).bindPopup(this.stationdetails.name);
+        citymarker.addTo(this.map);
+        this.#updateStationUI(this.stationdetails);
+      }
+    }
+  }
+  // ----------------------------------------------- 
+  //  Some private functions
+  // ----------------------------------------------- 
+  #createStationIcon(nbstations, availbikes) {
+    let iconsize;
+    if(nbstations < 25) {iconsize = 'lg';}
+    else { 
+      if(nbstations < 150) { iconsize = 'md';}
+      else { iconsize = 'sm';}
+    }
+    let primecolor = this.#primarycolor;
+    let secondcolor = this.#secondarycolor;
+    if(availbikes === 0) {
+      primecolor = secondcolor = this.#inactivecolor;
+    }
+    return L.mapquest.icons.circle(
+      {
+        primaryColor: primecolor,       // Outer circle line ?
+        secondaryColor: secondcolor,   // Circle color ?
+        shadow: true,
+        size: iconsize,
+        symbol: availbikes
+      })
   }
   // ----------------------------------------------- 
   #updateStationUI(thestation) {
@@ -171,10 +197,16 @@ export default class map {
         thestation.available_bike_stands;
     document.getElementById("remain_bikes").innerText = 
         thestation.available_bikes;
-    // If the selected station has no available bike, no need to 
+    // If the selected station has no available bike, or the username 
+    // or the userpassword are not filled, then no need to 
     // permit a reservation so disable the button
+    console.log(document.getElementById("last_name").value)
+    console.log(document.getElementById("first_name").value)
+    let checklname = document.getElementById("last_name").value.length === 0 ? true : false;
+    let checkfname = document.getElementById("first_name").value.length === 0 ? true : false;
+    let checkbikes = thestation.available_bikes === 0 ? true: false;
     let resabutton = document.getElementById("resa");
-    if(thestation.available_bikes === 0)
+    if(checklname || checkfname || checkbikes)
       resabutton.disabled = true;
     else
       resabutton.disabled = false;
@@ -203,48 +235,6 @@ export default class map {
           }
     }
     return displayedstations;
-  }
-  // ----------------------------------------------- 
-  reserveBike() {
-    this.log(`Search marker ${this.stationdetails.number}` );
-    // Identify the marker to be modified by the reservation action
-    for(let i = 0; i < this.markers.length; ++i) {
-      if(this.markers[i].options.title === this.stationdetails.number) {
-        this.stationdetails.available_bikes--;
-        this.markers[i].remove();     // have to update the UI with -1 bike
-        // Display the modified marker
-        let iconsize;
-        let nbstations = this.markers.length;
-        if(nbstations < 25) {iconsize = 'lg';}
-        else { 
-          if(nbstations < 150) { iconsize = 'md';}
-          else { iconsize = 'sm';}
-        }
-        let primecolor = this.#primarycolor;
-        let secondcolor = this.#secondarycolor;
-        if(this.stationstodisplay[i].available_bikes === 0) {
-          primecolor = secondcolor = this.#inactivecolor;
-        }
-          let citymarker = L.marker(this.stationdetails.position, 
-          {
-            icon: L.mapquest.icons.circle(
-              {
-                primaryColor: primecolor,     // Outer circle line ?
-                secondaryColor: secondcolor,  // Circle color ?
-                shadow: true,
-                size: iconsize,
-                symbol: this.stationdetails.available_bikes
-              }
-            ),
-            draggable: false,
-            clickable: true,
-            title: this.stationdetails.number,
-          })
-        citymarker.bindPopup(this.stationdetails.name);
-        citymarker.addTo(this.map);
-        this.#updateStationUI(this.stationdetails);
-      }
-    }
   }
   // ----------------------------------------------- 
   //  Some map event handlers
