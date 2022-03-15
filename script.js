@@ -42,6 +42,8 @@ let lastname = document.getElementById("last_name");
 let firstname = document.getElementById("first_name");
 let resabutton = document.getElementById("resa");
 let cardid = document.getElementById("cardID");
+let mobile = document.getElementById("mobile");
+let mail = document.getElementById("mail");
 // Add necessary event handlers
 boutonPause.addEventListener('click', togglePause);
 document.getElementById("previous").addEventListener('click', () => changeSlide(-1));
@@ -93,6 +95,8 @@ function cardidinput() {
     activeuser = theuser.searchUser(cardid.value.toUpperCase());
     lastname.value = activeuser.lname;
     firstname.value = activeuser.fname;
+    mobile.value = activeuser.mobile;
+    mail.value = activeuser.mail;
     cardid.value = cardid.value.toUpperCase();
     if(activeuser.status) {
         formstatus.lastname = formstatus.firstname = true;

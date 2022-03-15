@@ -36,12 +36,22 @@ export default class user {
         })
     }
     // ---------------------------------------------
+    bookResa() {
+        
+    }
+    // ---------------------------------------------
+    getResa() {
+        
+    }
+    // ---------------------------------------------
     searchUser(cardid) {
         let oneuser = { 
             "cardid": "UNKNOWN",
             "fname": "",
             "lname": "",
-            "status": false
+            "status": false,
+            "mobile": "",
+            "mail": ""
         }
         for(let i = 0; i < this.userlist.length; i++) {
             if(this.userlist[i].cardid === cardid) {
@@ -54,5 +64,9 @@ export default class user {
     // ---------------------------------------------
     getUsersList() {
         return this.userlist();
+    }
+    // ----------------------------------------------- 
+    log(message) {
+        console.log(this.version + message);
     }
 }

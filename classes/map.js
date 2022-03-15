@@ -27,6 +27,7 @@ export default class map {
   #primarycolor = '#2B29FF';            // Station circle display colors
   #secondarycolor = '#3B5998';
   #inactivecolor = '#EB1C41';
+  #resacolor = "#30D620";
   #limitstations = 80;                  // Do not display more stations on the map
   // ----------------------------------------------- 
   //  Class constructor
@@ -120,7 +121,8 @@ export default class map {
       // Create the marker and bind its popup
       let citymarker = L.marker(this.stationstodisplay[i].position, 
           {
-            icon: this.#createStationIcon(nbstations, this.stationstodisplay[i].available_bikes),
+            icon: this.#createStationIcon(nbstations, 
+              this.stationstodisplay[i].available_bikes),
             draggable: false,
             clickable: true,
             title: this.stationstodisplay[i].number,
@@ -155,7 +157,8 @@ export default class map {
         let nbstations = this.markers.length;
         let citymarker = L.marker(this.stationdetails.position, 
           {
-            icon: this.#createStationIcon(nbstations, this.stationdetails.available_bikes),
+            icon: this.#createStationIcon(nbstations, 
+                this.stationdetails.available_bikes, true),
             draggable: false,
             clickable: true,
             title: this.stationdetails.number,
@@ -171,7 +174,7 @@ export default class map {
   // ----------------------------------------------- 
   //  Some private functions
   // ----------------------------------------------- 
-  #createStationIcon(nbstations, availbikes) {
+  #createStationIcon(nbstations, availbikes, resflag = false) {
     let iconsize;
     if(nbstations < 25) {iconsize = 'lg';}
     else { 
@@ -179,10 +182,16 @@ export default class map {
       else { iconsize = 'sm';}
     }
     let primecolor = this.#primarycolor;
+    
     let secondcolor = this.#secondarycolor;
-    if(availbikes === 0) {
+    if(availbikes === 0 && !resflag) {
       primecolor = secondcolor = this.#inactivecolor;
     }
+    else {
+      if(resflag)   // If a reservation is made, 
+        secondcolor = this.#resacolor;
+    }
+
     return L.mapquest.icons.circle(
       {
         primaryColor: primecolor,       // Outer circle line ?
