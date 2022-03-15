@@ -11,6 +11,7 @@
 
 */
 import city from './classes/city.js'
+import user from './classes/user.js';
 
 const version = "script.js 1.41 Mar 15 2022 : "
 
@@ -23,6 +24,8 @@ let numero = 0;
 let isPaused = false
 let thecity = new city();
 let allcities =thecity.getCities();      // Get managed cities list
+let activeuser = {};
+let theuser= new user();
 let formstatus = {                       // Used to manage the resa button status
     firstname: false,
     lastname: false,
@@ -32,21 +35,25 @@ let checkallinputs = () => { return ! (formstatus.firstname
                                 && formstatus.lastname 
                                 && formstatus.bikesavailable); }
 
-// Set some event in the web page
+// Retrieve usefull DOM elements handlers
 let boutonPause = document.getElementById("pause_button");
+let cityselect = document.getElementById("cityselect");
+let lastname = document.getElementById("last_name");
+let firstname = document.getElementById("first_name");
+let resabutton = document.getElementById("resa");
+let cardid = document.getElementById("cardID");
+// Add necessary event handlers
 boutonPause.addEventListener('click', togglePause);
 document.getElementById("previous").addEventListener('click', () => changeSlide(-1));
 document.getElementById("next").addEventListener('click', () => changeSlide(1));
-let cityselect = document.getElementById("cityselect");
 // Change city listener
 cityselect.addEventListener('change', () => switchCity());       
+// Manage card ID input
+cardid.addEventListener('keyup', () => delay(cardidinput));
 // Manage user name and password inputs
-let lastname = document.getElementById("last_name");
-let firstname = document.getElementById("first_name");
 lastname.addEventListener('keyup', () => delay(lastnameinput));
 firstname.addEventListener('keyup', () => delay(firstnameinput));
 // Reservation button monitor
-let resabutton = document.getElementById("resa")
 resabutton.addEventListener('click', () => reserveBike());
 resabutton.disabled = checkallinputs;
 
@@ -81,6 +88,20 @@ function WaitSomeTime(ms) {
 };
 const delay = WaitSomeTime(500);    // Wait 500 ms before processing user input
                                     // No need to work until the user has finished typing
+// CardID input handler
+function cardidinput() {
+    activeuser = theuser.searchUser(cardid.value.toUpperCase());
+    lastname.value = activeuser.lname;
+    firstname.value = activeuser.fname;
+    cardid.value = cardid.value.toUpperCase();
+    if(activeuser.status) {
+        formstatus.lastname = formstatus.firstname = true;
+    }
+    else {
+        formstatus.lastname = formstatus.firstname = false;
+    }
+    resabutton.disabled = checkallinputs();
+}
 // User input handlers
 function lastnameinput() {
     formstatus.bikesavailable = thecity.getBikesStatus();
