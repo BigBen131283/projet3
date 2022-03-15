@@ -14,6 +14,7 @@
     Mar 12 2022   Change the click and zoom handlers code
     Mar 13 2022   Stations display is now dependent of the zoom factor
     Mar 14 2022   Some code optimization
+    Mar 15 2022 Start work on user / password
 
 */
 
@@ -31,7 +32,7 @@ export default class map {
   //  Class constructor
   // ----------------------------------------------- 
   constructor (selectedcity) {
-    this.version = "map.js 1.55 Mar 14 2022 : "
+    this.version = "map.js 1.56 Mar 15 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -50,6 +51,7 @@ export default class map {
         this.log(error);
       });
     this.stationdetails = {};           // Currently seelcted station in the interface
+    this.bikesavailable = false;        // Any bike available for the user ?
     // Just for fun, get user position
     // We could imagine to create the map directly on user position
     // But his location will probably not be in a JCDECAUX managed city
@@ -163,6 +165,9 @@ export default class map {
       }
     }
   }
+  getBikesStatus() {
+    return this.bikesavailable;
+  }
   // ----------------------------------------------- 
   //  Some private functions
   // ----------------------------------------------- 
@@ -200,16 +205,9 @@ export default class map {
     // If the selected station has no available bike, or the username 
     // or the userpassword are not filled, then no need to 
     // permit a reservation so disable the button
-    console.log(document.getElementById("last_name").value)
-    console.log(document.getElementById("first_name").value)
-    let checklname = document.getElementById("last_name").value.length === 0 ? true : false;
-    let checkfname = document.getElementById("first_name").value.length === 0 ? true : false;
-    let checkbikes = thestation.available_bikes === 0 ? true: false;
-    let resabutton = document.getElementById("resa");
-    if(checklname || checkfname || checkbikes)
-      resabutton.disabled = true;
-    else
-      resabutton.disabled = false;
+    this.bikesavailable = thestation.available_bikes === 0 ? false: true;
+    window.postMessage('Station UI updated'); // Trigger an evaluation of the
+                                              // Resa button status
   }
   // ----------------------------------------------- 
   #cleanupStationUI() {
