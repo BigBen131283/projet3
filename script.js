@@ -61,9 +61,12 @@ setInterval(autoDefil, 5000);
 // to inform the main page that some update occured in the UI
 // after choosing a bike station
 window.addEventListener('message', (event) => {
-    formstatus.bikesavailable = event.data;     // Directly receives station bike status
-    resabutton.disabled = checkallinputs();
-    console.log(`Message reçu: ${event.data}`);
+    switch( event.data.origin ) {
+        case 'MAPJS': 
+            formstatus.bikesavailable = event.data.bikesavailable;     // Directly receives station bike status
+            resabutton.disabled = checkallinputs();
+            break;
+    }           
 });
 // -----------------------------------------------------------------
 // Handling functions

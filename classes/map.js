@@ -206,8 +206,9 @@ export default class map {
     // or the userpassword are not filled, then no need to 
     // permit a reservation so disable the button
     this.bikesavailable = thestation.available_bikes === 0 ? false: true;
-    window.postMessage(this.bikesavailable); // Trigger an evaluation of the
-                                              // Resa button status
+    // Trigger an evaluation of the
+    // Resa button status
+    window.postMessage({origin: 'MAPJS', bikesavailable: this.bikesavailable} ); 
   }
   // ----------------------------------------------- 
   #cleanupStationUI() {
