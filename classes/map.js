@@ -15,6 +15,7 @@
     Mar 13 2022   Stations display is now dependent of the zoom factor
     Mar 14 2022   Some code optimization
     Mar 15 2022 Start work on user / password
+    Mar 16 2022   Add method, suppress unused vars
 
 */
 
@@ -33,7 +34,7 @@ export default class map {
   //  Class constructor
   // ----------------------------------------------- 
   constructor (selectedcity) {
-    this.version = "map.js 1.56 Mar 15 2022 : "
+    this.version = "map.js 1.57 Mar 16 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -51,7 +52,7 @@ export default class map {
       .catch( (error) => {
         this.log(error);
       });
-    this.stationdetails = {};           // Currently seelcted station in the interface
+    this.stationdetails = {};           // Currently selected station in the interface
     this.bikesavailable = false;        // Any bike available for the user ?
     // Just for fun, get user position
     // We could imagine to create the map directly on user position
@@ -121,8 +122,7 @@ export default class map {
       // Create the marker and bind its popup
       let citymarker = L.marker(this.stationstodisplay[i].position, 
           {
-            icon: this.#createStationIcon(nbstations, 
-              this.stationstodisplay[i].available_bikes),
+            icon: this.#createStationIcon(nbstations, this.stationstodisplay[i]),
             draggable: false,
             clickable: true,
             title: this.stationstodisplay[i].number,
@@ -145,28 +145,32 @@ export default class map {
     }
   }
   // ----------------------------------------------- 
-  reserveBike() {
+  BookDebookBike(bookdebookflag) {
     this.log(`Search marker ${this.stationdetails.number}` );
     // Identify the marker to be modified by the reservation action
     for(let i = 0; i < this.markers.length; ++i) {
       if(this.markers[i].options.title === this.stationdetails.number) {
         this.stationdetails.available_bikes--;
-        // Update the UI with -1 bike, so remove it
+        this.stationdetails.resabike = true;    // Set the reservation marker for this station
+        // Update the UI with -1 bike and the resa color
         this.markers[i].remove();
-        // And redisplay the modified marker
+        // Redisplay the modified marker
         let nbstations = this.markers.length;
         let citymarker = L.marker(this.stationdetails.position, 
           {
-            icon: this.#createStationIcon(nbstations, 
-                this.stationdetails.available_bikes, true),
+            icon: this.#createStationIcon(nbstations, this.stationdetails),
             draggable: false,
             clickable: true,
             title: this.stationdetails.number,
           }).bindPopup(this.stationdetails.name);
         citymarker.addTo(this.map);
         this.#updateStationUI(this.stationdetails);
+        break;
       }
     }
+  }
+  getSelectedStation() { 
+    return this.stationdetails;
   }
   getBikesStatus() {
     return this.bikesavailable;
@@ -174,7 +178,7 @@ export default class map {
   // ----------------------------------------------- 
   //  Some private functions
   // ----------------------------------------------- 
-  #createStationIcon(nbstations, availbikes, resflag = false) {
+  #createStationIcon(nbstations, station) {
     let iconsize;
     if(nbstations < 25) {iconsize = 'lg';}
     else { 
@@ -184,11 +188,11 @@ export default class map {
     let primecolor = this.#primarycolor;
     
     let secondcolor = this.#secondarycolor;
-    if(availbikes === 0 && !resflag) {
+    if(station.available_bikes === 0 && !station.resabike) {
       primecolor = secondcolor = this.#inactivecolor;
     }
     else {
-      if(resflag)   // If a reservation is made, 
+      if(station.resabike)   // If a reservation is made, 
         secondcolor = this.#resacolor;
     }
 
@@ -198,7 +202,7 @@ export default class map {
         secondaryColor: secondcolor,   // Circle color ?
         shadow: true,
         size: iconsize,
-        symbol: availbikes
+        symbol: station.available_bikes
       })
   }
   // ----------------------------------------------- 
@@ -215,8 +219,7 @@ export default class map {
     // or the userpassword are not filled, then no need to 
     // permit a reservation so disable the button
     this.bikesavailable = thestation.available_bikes === 0 ? false: true;
-    // Trigger an evaluation of the
-    // Resa button status
+    // Trigger an evaluation of the Resa button status
     window.postMessage({origin: 'MAPJS', bikesavailable: this.bikesavailable} ); 
   }
   // ----------------------------------------------- 

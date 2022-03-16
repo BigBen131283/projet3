@@ -46,12 +46,16 @@ export default class city {
     return;
   }
   // ----------------------------------------------- 
-  reserveBike() {
-    this.themap.reserveBike();
+  BookDebookBike(bookdebookflag) {
+    this.themap.BookDebookBike();
   }
   // ----------------------------------------------- 
   getBikesStatus() {
     return this.themap.getBikesStatus();
+  }
+  // ----------------------------------------------- 
+  getSelectedStation() {
+    return this.themap.getSelectedStation();
   }
   // ----------------------------------------------- 
   getPosition(cityname) {    

@@ -6,7 +6,8 @@
     Mar 09 2022   Change stations management logic.
     Mar 10 2022   Finalize reorg
     Mar 11 2022   Station list is back to this object
-
+    Mar 16 2022   Add an attribute to the station entry, reflecting the station
+                  reservation status. If a bike is reserved then set a flag
 */
 export default class stations {
 
@@ -14,7 +15,7 @@ export default class stations {
   #apikey = "0b872e25a940eeebc3e9a35346780b1074916a8f";
 
   constructor (cityname) {
-      this.version = "stations.js 1.24 Mar 11 2022 : "
+      this.version = "stations.js 1.25 Mar 16 2022 : "
       this.cityname = cityname;
       this.citystations = [];
   }
@@ -31,6 +32,9 @@ export default class stations {
       })
       .then( json =>  {
         this.citystations = json;
+        this.citystations.forEach(element => {
+          element.resabike = false;       // Add a flag to the original array
+        });
         resolve(json);
       })
       .catch (error => {
