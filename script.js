@@ -8,24 +8,24 @@
     Mar 05 2022 Now start work on stations positionning to the selected map
     Mar 13 2022 Handle click on RESA button
     Mar 15 2022 Start work on user / password
+    Mar 16 2022 Work on cardid, bike resa...
 
 */
 import city from './classes/city.js'
-import user from './classes/user.js';
+import users from './classes/users.js';
 
-const version = "script.js 1.41 Mar 15 2022 : "
+const version = "script.js 1.45 Mar 16 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
 // -----------------------------------------------------------------
-log('Full reload');
 const slide = ["/images/image1.jpg", "/images/image2.jpg", "/images/image3.jpg"];
 let numero = 0;
 let isPaused = false
 let thecity = new city();
 let allcities =thecity.getCities();      // Get managed cities list
 let activeuser = {};
-let theuser= new user();
+let theusers = new users();              // Used to manage users
 let formstatus = {                       // Used to manage the resa button status
     firstname: false,
     lastname: false,
@@ -44,6 +44,10 @@ let resabutton = document.getElementById("resa");
 let cardid = document.getElementById("cardID");
 let mobile = document.getElementById("mobile");
 let mail = document.getElementById("mail");
+let resastation = document.getElementById("station");
+let resaclient = document.getElementById("client");
+let resatime = document.getElementById("resatime");
+let resatimer = document.getElementById("timer");
 // Add necessary event handlers
 boutonPause.addEventListener('click', togglePause);
 document.getElementById("previous").addEventListener('click', () => changeSlide(-1));
@@ -56,7 +60,7 @@ cardid.addEventListener('keyup', () => delay(cardidinput));
 lastname.addEventListener('keyup', () => delay(lastnameinput));
 firstname.addEventListener('keyup', () => delay(firstnameinput));
 // Reservation button monitor
-resabutton.addEventListener('click', () => reserveBike());
+resabutton.addEventListener('click', () => BookDebookBike());
 resabutton.disabled = checkallinputs;
 
 // Load the list box with supported cities
@@ -65,10 +69,12 @@ for(let i = 0; i < allcities.length; i++) {
     option.value = option.innerHTML = allcities[i].name;
     cityselect.appendChild(option);
 }
+// For the automatic slider movement
 setInterval(autoDefil, 5000);
-// Here we install a window event handler used by map.js
-// to inform the main page that some update occured in the UI
-// after choosing a bike station
+// Install a window event handler used to synchronize the page content 
+// after inner classes state modifications.
+// event.data carries an object used to identify the class emiter and 
+// the data it wants to communicate
 window.addEventListener('message', (event) => {
     switch( event.data.origin ) {
         case 'MAPJS': 
@@ -92,7 +98,7 @@ const delay = WaitSomeTime(500);    // Wait 500 ms before processing user input
                                     // No need to work until the user has finished typing
 // CardID input handler
 function cardidinput() {
-    activeuser = theuser.searchUser(cardid.value.toUpperCase());
+    activeuser = theusers.searchUser(cardid.value.toUpperCase());
     lastname.value = activeuser.lname;
     firstname.value = activeuser.fname;
     mobile.value = activeuser.mobile;
@@ -124,8 +130,27 @@ function firstnameinput() {
     console.log(formstatus)
 }
 // Resa  handler
-function reserveBike() {
-    thecity.reserveBike();
+// It is assumed than when coming here all controls are done
+function BookDebookBike() {
+    if(activeuser.activeresa) { 
+        thecity.BookDebookBike(true);           // Book
+        resabutton.innerText = "Libérer";
+        activeuser.activeresa = true;
+        activeuser.reservation = {
+            "station": thecity.getSelectedStation(),
+            "resatime": new Date()
+        };
+        resastation.innerText = `${activeuser.reservation.station.name}`;
+        resaclient.innerText = `${activeuser.fname} ${activeuser.lname}`;
+        resatime.innerText = `${activeuser.reservation.resatime}`
+    }
+    else {
+        thecity.BookDebookBike(false);          // Debook
+        resabutton.innerText = "Réserver";
+        activeuser.activeresa = false;
+        activeuser.reservation = {  };
+        resastation.innerText = resaclient.innerText =  resatime.innerText = "";
+    }
 }
 
 // For the image slider

@@ -36,14 +36,6 @@ export default class user {
         })
     }
     // ---------------------------------------------
-    bookResa() {
-        
-    }
-    // ---------------------------------------------
-    getResa() {
-        
-    }
-    // ---------------------------------------------
     searchUser(cardid) {
         let oneuser = { 
             "cardid": "UNKNOWN",
@@ -51,7 +43,8 @@ export default class user {
             "lname": "",
             "status": false,
             "mobile": "",
-            "mail": ""
+            "mail": "",
+            "reservation" : {}
         }
         for(let i = 0; i < this.userlist.length; i++) {
             if(this.userlist[i].cardid === cardid) {
