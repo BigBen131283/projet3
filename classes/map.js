@@ -35,7 +35,7 @@ export default class map {
   //  Class constructor
   // ----------------------------------------------- 
   constructor (selectedcity) {
-    this.version = "map.js 1.61 Mar 17 2022 : "
+    this.version = "map.js 1.63 Mar 17 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -43,7 +43,7 @@ export default class map {
     this.map = null;
     this.center = [0,0];
     this.latLngBounds = [];
-    this.markers = [];                 // Manage markers displayed on the map
+    this.markergroup;               // Manage markers displayed on the map
     this.thestations = new stations(this.cityname);
     this.stationslist = [];
     // Load the associated stations
@@ -116,7 +116,7 @@ export default class map {
     //---------------------------------------------
     // The display loop
     //---------------------------------------------
-    let markergroup = L.markerClusterGroup({
+    this.markergroup = L.markerClusterGroup({
       spiderfyOnMaxZoom: false,
       showCoverageOnHover: true,
       zoomToBoundsOnClick: true
@@ -126,7 +126,7 @@ export default class map {
       // Create the marker and bind its popup
       let citymarker = L.marker(thestation.position, 
           {
-            icon: this.#createStationIcon(nbstations, thestation),
+            icon: this.#createStationIcon(thestation),
             draggable: false,
             clickable: true,
             title: thestation.number,
@@ -146,13 +146,36 @@ export default class map {
           }
         }
       });
-      markergroup.addLayer(citymarker);
+      this.markergroup.addLayer(citymarker);
     }
-    this.map.addLayer(markergroup);
+    this.map.addLayer(this.markergroup);
   }
   // ----------------------------------------------- 
   BookBike() {
     this.log(`Search marker ${this.selectedstation.number}` );
+    let count = 0;
+    this.markergroup.eachLayer( (onemarker) => {
+      ++count;
+      if(onemarker.options.title === this.selectedstation.number) {
+        console.log(onemarker);
+        this.markergroup.removeLayer(onemarker);
+        this.selectedstation.available_bikes--;
+        //this.markergroup.clearLayers();
+      }
+    })
+    console.log(`Examined ${count} layers before delete`);
+    count = 0;
+    this.markergroup.eachLayer( (onemarker) => {
+      ++count;
+    })
+    console.log(`Examined ${count} layers after one delete`);
+    count = 0;
+    this.markergroup.clearLayers();
+    this.markergroup.eachLayer( (onemarker) => {
+      ++count;
+    })
+    console.log(`Examined ${count} layers after clear all`);
+    /*
     // Identify the marker to be modified by the reservation action
     for(let i = 0; i < this.markers.length; ++i) {
       if(this.markers[i].options.title === this.selectedstation.number) {
@@ -165,7 +188,7 @@ export default class map {
         let nbstations = this.markers.length;
         this.markers[i] = L.marker(this.selectedstation.position, 
           {
-            icon: this.#createStationIcon(nbstations, this.selectedstation),
+            icon: this.#createStationIcon(this.selectedstation),
             draggable: false,
             clickable: true,
             title: this.selectedstation.number,
@@ -176,10 +199,12 @@ export default class map {
         break;
       }
     }
+    */
   }
   // ----------------------------------------------- 
   DebookBike(station) {
     this.log(`Search marker ${station.number}` );
+    /* 
     // Identify the marker to be modified by the reservation action
     for(let i = 0; i < this.markers.length; ++i) {
       if(this.markers[i].options.title === station.number) {
@@ -192,7 +217,7 @@ export default class map {
         let nbstations = this.markers.length;
         this.markers[i] = L.marker(station.position, 
           {
-            icon: this.#createStationIcon(nbstations, station),
+            icon: this.#createStationIcon(station),
             draggable: false,
             clickable: true,
             title: station.number,
@@ -203,6 +228,7 @@ export default class map {
         break;
       }
     }
+    */
   }
   // ----------------------------------------------- 
   getSelectedStation() { 
@@ -211,15 +237,8 @@ export default class map {
   // ----------------------------------------------- 
   //  Some private functions
   // ----------------------------------------------- 
-  #createStationIcon(nbstations, station) {
-    let iconsize;
-    if(nbstations < 25) {iconsize = 'lg';}
-    else { 
-      if(nbstations < 150) { iconsize = 'md';}
-      else { iconsize = 'sm';}
-    }
-    let primecolor = this.#primarycolor;
-    
+  #createStationIcon(station) {
+    let primecolor = this.#primarycolor;    
     let secondcolor = this.#secondarycolor;
     if(station.available_bikes === 0 && !station.resabike) {
       primecolor = secondcolor = this.#inactivecolor;
@@ -234,26 +253,8 @@ export default class map {
         primaryColor: primecolor,       // Outer circle line ?
         secondaryColor: secondcolor,   // Circle color ?
         shadow: true,
-        size: iconsize,
         symbol: station.available_bikes
       })
-  }
-  // ----------------------------------------------- 
-  #countEligibleStations(stationlist) {
-    let displayedstations = [];
-    const latSouth = this.latLngBounds._southWest.lat;
-    const latNorth = this.latLngBounds._northEast.lat;
-    const longEast = this.latLngBounds._northEast.lng;
-    const longWest = this.latLngBounds._southWest.lng;
-    for(let i = 0; i < stationlist.length; ++i) {
-      if(stationlist[i].position.lat > latSouth
-          && stationlist[i].position.lat < latNorth
-          && stationlist[i].position.lng > longWest
-          && stationlist[i].position.lng < longEast) {
-            displayedstations.push(stationlist[i]);
-          }
-    }
-    return displayedstations;
   }
   // ----------------------------------------------- 
   //  Some map event handlers
