@@ -159,14 +159,14 @@ export default class map {
         this.markers[i].remove();
         // Redisplay the modified marker
         let nbstations = this.markers.length;
-        let citymarker = L.marker(this.selectedstation.position, 
+        this.markers[i] = L.marker(this.selectedstation.position, 
           {
             icon: this.#createStationIcon(nbstations, this.selectedstation),
             draggable: false,
             clickable: true,
             title: this.selectedstation.number,
           }).bindPopup(this.selectedstation.name);
-        citymarker.addTo(this.map);
+          this.markers[i].addTo(this.map);
         // Trigger a refresh of the main page
         window.postMessage({origin: 'MAPJS-BOOK', stationobject: this.selectedstation} ); 
         break;
@@ -185,14 +185,14 @@ export default class map {
         this.markers[i].remove();
         // Redisplay the modified marker
         let nbstations = this.markers.length;
-        let citymarker = L.marker(station.position, 
+        this.markers[i] = L.marker(station.position, 
           {
             icon: this.#createStationIcon(nbstations, station),
             draggable: false,
             clickable: true,
             title: station.number,
           }).bindPopup(station.name);
-        citymarker.addTo(this.map);
+          this.markers[i].addTo(this.map);
         // Trigger a refresh of the main page
         window.postMessage({origin: 'MAPJS-DEBOOK', stationobject: station}); 
         break;
