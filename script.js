@@ -10,12 +10,13 @@
     Mar 15 2022 Start work on user / password
     Mar 16 2022 Work on cardid, bike resa...
     Mar 17 2022 Work on cardid, bike resa...
+                Reorg display action so that they all take place in script.js
 
 */
 import city from './classes/city.js'
 import users from './classes/users.js';
 
-const version = "script.js 1.46 Mar 17 2022 : "
+const version = "script.js 1.47 Mar 17 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -24,10 +25,10 @@ const slide = ["/images/image1.jpg", "/images/image2.jpg", "/images/image3.jpg"]
 let numero = 0;
 let isPaused = false
 let thecity = new city();
-let allcities =thecity.getCities();      // Get managed cities list
-let activeuser = {};
-let theusers = new users();              // Used to manage users
-let formstatus = {                       // Used to manage the resa button status
+let allcities =thecity.getCities();     // Get managed cities list
+let theusers = new users();             // Used to manage users and their actions
+let activeuser = {};                    // A single identified user
+let formstatus = {                      // Used to manage the resa button status
     firstname: false,
     lastname: false,
     bikesavailable: false
@@ -41,12 +42,16 @@ let checkallinputs = () => { console.log(formstatus);
 // Retrieve usefull DOM elements handlers
 let boutonPause = document.getElementById("pause_button");
 let cityselect = document.getElementById("cityselect");
+let resabutton = document.getElementById("resa");
+let address = document.getElementById("address");
+let allplaces = document.getElementById("all_places");
+let remainplaces = document.getElementById("remain_places");
+let remainbikes = document.getElementById("remain_bikes");
+let cardid = document.getElementById("cardID");
 let lastname = document.getElementById("last_name");
 let firstname = document.getElementById("first_name");
-let resabutton = document.getElementById("resa");
-let cardid = document.getElementById("cardID");
-let mobile = document.getElementById("mobile");
 let mail = document.getElementById("mail");
+let mobile = document.getElementById("mobile");
 let resastation = document.getElementById("station");
 let resaclient = document.getElementById("client");
 let resatime = document.getElementById("resatime");
@@ -74,10 +79,16 @@ for(let i = 0; i < allcities.length; i++) {
 }
 // For the automatic slider movement
 setInterval(autoDefil, 5000);
+
+// ---------------------------------------------------------------------------------
+// M A I N   P A G E  E V E N T   H A N D L E R   F O R   D I S P L A Y
+//
 // Install a window event handler used to synchronize the page content 
 // after inner classes state modifications.
 // event.data carries an object used to identify the class emiter and 
-// the data it wants to communicate
+// the data it wants to communicate, most often a stations object
+// but can be anything
+// ---------------------------------------------------------------------------------
 window.addEventListener('message', (event) => {
     switch( event.data.origin ) {
         case 'MAPJS-BOOKDEBOOK': 
@@ -85,13 +96,24 @@ window.addEventListener('message', (event) => {
             resabutton.disabled = checkallinputs();
             break;
         case 'MAPJS-UPDATEUI': 
-            formstatus.bikesavailable = event.data.availablebikes === 0 ? false : true;     // Receives station bike status
+            address.innerText = (event.data.stationobject.address === "" ? 
+                        event.data.stationobject.name :
+                        event.data.stationobject.address);
+            allplaces.innerText = event.data.stationobject.bike_stands;
+            remainplaces.innerText = event.data.stationobject.available_bike_stands;
+            remainbikes.innerText = event.data.stationobject.available_bikes;
+            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ?
+                         false : true;     // Update station bike status
             resabutton.disabled = checkallinputs();
             break;
-        case 'MAPJS-DISPLAY': 
-            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ? false : true;     // Receives station bike status
+        case 'MAPJS-CLEANUI': 
+            address.innerText = "";
+            allplaces.innerText = "";
+            remainplaces.innerText = ""; 
+            remainbikes.innerText = "";
+            formstatus.bikesavailable = false;
             resabutton.disabled = checkallinputs();
-            break;
+            break;        
     }           
 });
 // -----------------------------------------------------------------
@@ -110,12 +132,13 @@ const delay = WaitSomeTime(500);    // Wait 500 ms before processing user input
 // CardID input handler
 function cardidinput() {
     activeuser = theusers.searchUser(cardid.value.toUpperCase());
+    // The activeuser.found flag indicates the cardid has a match in userlist.json
     lastname.value = activeuser.lname;
     firstname.value = activeuser.fname;
     mobile.value = activeuser.mobile;
     mail.value = activeuser.mail;
     cardid.value = cardid.value.toUpperCase();
-    if(activeuser.status) {
+    if(activeuser.found) {
         formstatus.lastname = formstatus.firstname = true;
     }
     else {
@@ -138,6 +161,8 @@ function firstnameinput() {
 }
 // Resa  handler
 // It is assumed than when coming here all controls are done
+// 1 / Bikes are available
+// 2 - User lname and fname are both ok
 function BookDebookBike() {
     if(activeuser.activeresa) { 
         thecity.BookDebookBike(true);           // Book

@@ -54,7 +54,6 @@ export default class map {
         this.log(error);
       });
     this.stationdetails = {};           // Currently selected station in the interface
-    this.bikesavailable = false;        // Any bike available for the user ?
     // Just for fun, get user position
     // We could imagine to create the map directly on user position
     // But his location will probably not be in a JCDECAUX managed city
@@ -90,7 +89,8 @@ export default class map {
   }
   // ----------------------------------------------- 
   changeMap(selectedcity) {
-    this.#cleanupStationUI();       // Clear all station fields as the map changes
+    // Clear all station fields as the map changes
+    window.postMessage({origin: 'MAPJS-CLEANUI'} );
     this.map.setView(selectedcity.coord);
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -135,13 +135,12 @@ export default class map {
         // Should ALWAYS find the station as this function call
         // is triggered by a mouse event on the station !
         for(let i = 0; i < this.stationstodisplay.length; ++i) {
-          if(this.stationstodisplay[i].number === e.sourceTarget.options.title)
+          if(this.stationstodisplay[i].number === e.sourceTarget.options.title) {
             this.stationdetails = this.stationstodisplay[i];
+            // Refresh main page as a new station has been selected
+            window.postMessage({origin: 'MAPJS-UPDATEUI', stationobject: this.stationdetails} ); 
+          }
         }
-        this.#updateStationUI(this.stationdetails);
-        // Trigger an evaluation of the Resa button status as a new station has been selected
-        window.postMessage({origin: 'MAPJS-DISPLAY', stationobject: this.stationdetails} ); 
-
       });
       // Add station marker returned by addTo() to the map and memorize it in
       // markers  the array for event handling and later cleanup
@@ -168,9 +167,7 @@ export default class map {
             title: this.stationdetails.number,
           }).bindPopup(this.stationdetails.name);
         citymarker.addTo(this.map);
-        this.#updateStationUI(this.stationdetails);
-        this.bikesavailable = thestation.available_bikes === 0 ? false: true;
-        // Trigger an evaluation of the Resa button status
+        // Trigger a refresh of the main page
         window.postMessage({origin: 'MAPJS-BOOKDEBOOK', stationobject: this.stationdetails} ); 
         break;
       }
@@ -178,9 +175,6 @@ export default class map {
   }
   getSelectedStation() { 
     return this.stationdetails;
-  }
-  getBikesStatus() {
-    return this.bikesavailable;
   }
   // ----------------------------------------------- 
   //  Some private functions
@@ -211,27 +205,6 @@ export default class map {
         size: iconsize,
         symbol: station.available_bikes
       })
-  }
-  // ----------------------------------------------- 
-  #updateStationUI(thestation) {
-    document.getElementById("address").innerText = 
-        (thestation.address === "" ? thestation.name : thestation.address);
-    document.getElementById("all_places").innerText = 
-        thestation.bike_stands;
-    document.getElementById("remain_places").innerText = 
-        thestation.available_bike_stands;
-    document.getElementById("remain_bikes").innerText = 
-        thestation.available_bikes;
-    // Trigger an evaluation of the Resa button status
-    window.postMessage({origin: 'MAPJS-UPDATEUI', availablebikes: thestation.available_bikes} ); 
-  }
-  // ----------------------------------------------- 
-  #cleanupStationUI() {
-    document.getElementById("address").innerText = "";
-    document.getElementById("all_places").innerText = "";
-    document.getElementById("remain_places").innerText = ""; 
-    document.getElementById("remain_bikes").innerText = "";
-    document.getElementById("resa").disabled = true;
   }
   // ----------------------------------------------- 
   #countEligibleStations(stationlist) {

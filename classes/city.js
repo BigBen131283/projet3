@@ -6,6 +6,7 @@
     Mar 10 2022   Finalize reorg
     Mar 12 2022   Add Hossegor ;-)
     Mar 15 2022   Work on input form to reserve a bike
+    Mar 17 2022   Cleanup unused code
 
 */
 
@@ -13,7 +14,7 @@ import map from './map.js';
 export default class city {
 
   constructor (cityname = 'WORLD') {
-      this.version = "city.js 1.15 Mar 15 2022 : "
+      this.version = "city.js 1.16 Mar 17 2022 : "
       // Some of the cities managed by JCDecaux
       this.availablecities = [
         {name: 'LYON', coord:  [45.7569838, 4.8339838 ] },
@@ -48,10 +49,6 @@ export default class city {
   // ----------------------------------------------- 
   BookDebookBike(bookdebookflag) {
     this.themap.BookDebookBike();
-  }
-  // ----------------------------------------------- 
-  getBikesStatus() {
-    return this.themap.getBikesStatus();
   }
   // ----------------------------------------------- 
   getSelectedStation() {

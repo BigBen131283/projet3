@@ -41,7 +41,7 @@ export default class user {
             "cardid": "UNKNOWN",
             "fname": "",
             "lname": "",
-            "status": false,
+            "found": false,
             "mobile": "",
             "mail": "",
             "reservation" : {}
