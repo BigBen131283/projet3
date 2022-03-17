@@ -26,16 +26,16 @@ export default class map {
   #defaultzoom = 12;
   #minzoom = 10;
   #maxzoom = 18;
-  #primarycolor = '#2B29FF';            // Station circle display colors
+  #primarycolor = '#2B29FF';           // Station circle display colors
   #secondarycolor = '#3B5998';
   #inactivecolor = '#EB1C41';
   #resacolor = "#30D620";
-  #limitstations = 80;                  // Do not display more stations on the map
+  #limitstations = 80;                 // Do not display more stations on the map
   // ----------------------------------------------- 
   //  Class constructor
   // ----------------------------------------------- 
   constructor (selectedcity) {
-    this.version = "map.js 1.58 Mar 17 2022 : "
+    this.version = "map.js 1.61 Mar 17 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -43,17 +43,18 @@ export default class map {
     this.map = null;
     this.center = [0,0];
     this.latLngBounds = [];
-    this.markers = [];                              // Manage markers displayed on the map
+    this.markers = [];                 // Manage markers displayed on the map
     this.thestations = new stations(this.cityname);
-    this.stationstodisplay = [];
+    this.stationslist = [];
     // Load the associated stations
     this.thestations.loadStations().then( (resp) => {
+      this.stationslist = resp;
         this.displayStations();
       })
       .catch( (error) => {
         this.log(error);
       });
-    this.selectedstation = {};           // Currently selected station in the interface
+    this.selectedstation = {};         // Currently selected station in the interface
     // Just for fun, get user position
     // We could imagine to create the map directly on user position
     // But his location will probably not be in a JCDECAUX managed city
@@ -108,44 +109,46 @@ export default class map {
   }
   // ----------------------------------------------- 
   displayStations() {
-    // Clear all markers from map if any and clear the markers array
-    for(let i = 0; i < this.markers.length; ++i) { this.markers[i].remove(); }
-    this.markers = [];
     // Get already loaded stations and search for those to be displayed
-    let stationslist = this.thestations.getStations();
-    this.stationstodisplay = this.#countEligibleStations(stationslist);
-    let nbstations = this.stationstodisplay.length;
-    // Limit the number of displayed stations
-    if(nbstations > this.#limitstations) { nbstations = this.#limitstations;}
-    this.log(`${nbstations}/${this.stationstodisplay.length} within map boundaries: zoom : ${this.currentzoom}`);
+    this.stationslist = this.thestations.getStations();
+    let nbstations = this.stationslist.length;
+    this.log(`zoom : ${this.currentzoom}`);
+    //---------------------------------------------
     // The display loop
-    for(let i = 0; i < nbstations; ++i) {
+    //---------------------------------------------
+    let markergroup = L.markerClusterGroup({
+      spiderfyOnMaxZoom: false,
+      showCoverageOnHover: true,
+      zoomToBoundsOnClick: true
+    });
+    for(let i = 0; i < this.stationslist.length; ++i) {
+      let thestation = this.stationslist[i];
       // Create the marker and bind its popup
-      let citymarker = L.marker(this.stationstodisplay[i].position, 
+      let citymarker = L.marker(thestation.position, 
           {
-            icon: this.#createStationIcon(nbstations, this.stationstodisplay[i]),
+            icon: this.#createStationIcon(nbstations, thestation),
             draggable: false,
             clickable: true,
-            title: this.stationstodisplay[i].number,
-          }).bindPopup(this.stationstodisplay[i].name);
+            title: thestation.number,
+          }).bindPopup(thestation.name);
       // Sorry, have to put handler code here as there is no access to "this"
       // if the code is located in external function
       citymarker.on('click',(e) => {
         this.selectedstation = {};
         // Should ALWAYS find the station as this function call
         // is triggered by a mouse event on the station !
-        for(let i = 0; i < this.stationstodisplay.length; ++i) {
-          if(this.stationstodisplay[i].number === e.sourceTarget.options.title) {
-            this.selectedstation = this.stationstodisplay[i];
+        for(let i = 0; i < this.stationslist.length; ++i) {
+          if(this.stationslist[i].number === e.sourceTarget.options.title) {
+            this.selectedstation = this.stationslist[i];
+            this.map.setView(this.selectedstation.position, this.zoom);   // Center the map on the clicked station
             // Refresh main page as a new station has been selected
             window.postMessage({origin: 'MAPJS-UPDATEUI', stationobject: this.selectedstation} ); 
           }
         }
       });
-      // Add station marker returned by addTo() to the map and memorize it in
-      // markers  the array for event handling and later cleanup
-      this.markers.push(citymarker.addTo(this.map));
+      markergroup.addLayer(citymarker);
     }
+    this.map.addLayer(markergroup);
   }
   // ----------------------------------------------- 
   BookBike() {
@@ -153,6 +156,7 @@ export default class map {
     // Identify the marker to be modified by the reservation action
     for(let i = 0; i < this.markers.length; ++i) {
       if(this.markers[i].options.title === this.selectedstation.number) {
+        this.markers[i].number--;
         this.selectedstation.available_bikes--;
         this.selectedstation.resabike = true;    // Set the reservation marker for this station
         // Update the UI with -1 bike and the resa color
@@ -179,6 +183,7 @@ export default class map {
     // Identify the marker to be modified by the reservation action
     for(let i = 0; i < this.markers.length; ++i) {
       if(this.markers[i].options.title === station.number) {
+        this.markers[i].number++;
         station.available_bikes++;
         station.resabike = false;    // Set the reservation marker for this station
         // Update the UI with +1 bike and the resa color
