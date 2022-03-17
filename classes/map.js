@@ -16,6 +16,7 @@
     Mar 14 2022   Some code optimization
     Mar 15 2022 Start work on user / password
     Mar 16 2022   Add method, suppress unused vars
+    Mar 17 2022   Fix UI update problems ( resabutton )
 
 */
 
@@ -34,7 +35,7 @@ export default class map {
   //  Class constructor
   // ----------------------------------------------- 
   constructor (selectedcity) {
-    this.version = "map.js 1.57 Mar 16 2022 : "
+    this.version = "map.js 1.58 Mar 17 2022 : "
     this.mapquestkey = 'rQpw7O2I6ADzhQAAJLS4vZZ5PN7TLMX2';
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -138,6 +139,9 @@ export default class map {
             this.stationdetails = this.stationstodisplay[i];
         }
         this.#updateStationUI(this.stationdetails);
+        // Trigger an evaluation of the Resa button status as a new station has been selected
+        window.postMessage({origin: 'MAPJS-DISPLAY', stationobject: this.stationdetails} ); 
+
       });
       // Add station marker returned by addTo() to the map and memorize it in
       // markers  the array for event handling and later cleanup

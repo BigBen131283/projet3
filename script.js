@@ -9,12 +9,13 @@
     Mar 13 2022 Handle click on RESA button
     Mar 15 2022 Start work on user / password
     Mar 16 2022 Work on cardid, bike resa...
+    Mar 17 2022 Work on cardid, bike resa...
 
 */
 import city from './classes/city.js'
 import users from './classes/users.js';
 
-const version = "script.js 1.45 Mar 16 2022 : "
+const version = "script.js 1.46 Mar 17 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -31,9 +32,11 @@ let formstatus = {                       // Used to manage the resa button statu
     lastname: false,
     bikesavailable: false
 }
-let checkallinputs = () => { return ! (formstatus.firstname 
+let checkallinputs = () => { console.log(formstatus);
+                            return ! (formstatus.firstname 
                                 && formstatus.lastname 
-                                && formstatus.bikesavailable); }
+                                && formstatus.bikesavailable); 
+                        }
 
 // Retrieve usefull DOM elements handlers
 let boutonPause = document.getElementById("pause_button");
@@ -78,11 +81,15 @@ setInterval(autoDefil, 5000);
 window.addEventListener('message', (event) => {
     switch( event.data.origin ) {
         case 'MAPJS-BOOKDEBOOK': 
-            formstatus.bikesavailable = event.data.stationobject.available_bikes;     // Directly receives station bike status
+            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ? false : true;     // Receives the whole station object
             resabutton.disabled = checkallinputs();
             break;
         case 'MAPJS-UPDATEUI': 
-            formstatus.bikesavailable = event.data.availablebikes === 0 ? false : true;     // Directly receives station bike status
+            formstatus.bikesavailable = event.data.availablebikes === 0 ? false : true;     // Receives station bike status
+            resabutton.disabled = checkallinputs();
+            break;
+        case 'MAPJS-DISPLAY': 
+            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ? false : true;     // Receives station bike status
             resabutton.disabled = checkallinputs();
             break;
     }           
@@ -118,20 +125,16 @@ function cardidinput() {
 }
 // User input handlers
 function lastnameinput() {
-    formstatus.bikesavailable = thecity.getBikesStatus();
     if(lastname.value.length === 0) 
         { formstatus.lastname = false; }
     else { formstatus.lastname = true;}
     resabutton.disabled = checkallinputs();
-    console.log(formstatus)
 }
 function firstnameinput() {
-    formstatus.bikesavailable = thecity.getBikesStatus();
     if(firstname.value.length === 0) 
         { formstatus.firstname  = false; }
     else { formstatus.firstname = true;}
     resabutton.disabled = checkallinputs();
-    console.log(formstatus)
 }
 // Resa  handler
 // It is assumed than when coming here all controls are done
@@ -141,7 +144,7 @@ function BookDebookBike() {
         resabutton.innerText = "Libérer";
         activeuser.activeresa = true;
         activeuser.reservation = {
-            "station": thecity.getSelectedStation(),
+            "station": thecity.getSelectedStation(),    
             "resatime": new Date()
         };
         resastation.innerText = `${activeuser.reservation.station.name}`;
