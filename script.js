@@ -81,7 +81,7 @@ for(let i = 0; i < allcities.length; i++) {
 setInterval(autoDefil, 5000);
 
 // ---------------------------------------------------------------------------------
-// M A I N   P A G E  E V E N T   H A N D L E R   F O R   D I S P L A Y
+//     M A I N   P A G E  E V E N T   H A N D L E R   F O R   D I S P L A Y
 //
 // Install a window event handler used to synchronize the page content 
 // after inner classes state modifications.
@@ -91,8 +91,16 @@ setInterval(autoDefil, 5000);
 // ---------------------------------------------------------------------------------
 window.addEventListener('message', (event) => {
     switch( event.data.origin ) {
-        case 'MAPJS-BOOKDEBOOK': 
-            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ? false : true;     // Receives the whole station object
+        case 'MAPJS-BOOK': 
+            // Receives the whole station object
+            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ? false : true;
+            activeuser.reservation.station = event.data.stationobject;
+            resabutton.disabled = checkallinputs();
+            break;
+        case 'MAPJS-DEBOOK': 
+            // Receives the whole station object
+            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ? false : true;
+            activeuser.reservation.station = {};
             resabutton.disabled = checkallinputs();
             break;
         case 'MAPJS-UPDATEUI': 
@@ -132,6 +140,7 @@ const delay = WaitSomeTime(500);    // Wait 500 ms before processing user input
 // CardID input handler
 function cardidinput() {
     activeuser = theusers.searchUser(cardid.value.toUpperCase());
+    activeuser.activeresa = false;
     // The activeuser.found flag indicates the cardid has a match in userlist.json
     lastname.value = activeuser.lname;
     firstname.value = activeuser.fname;
@@ -145,27 +154,43 @@ function cardidinput() {
         formstatus.lastname = formstatus.firstname = false;
     }
     resabutton.disabled = checkallinputs();
+    console.log(activeuser);
 }
 // User input handlers
 function lastnameinput() {
     if(lastname.value.length === 0) 
         { formstatus.lastname = false; }
     else { formstatus.lastname = true;}
+    manageUserObject();
     resabutton.disabled = checkallinputs();
 }
 function firstnameinput() {
     if(firstname.value.length === 0) 
         { formstatus.firstname  = false; }
     else { formstatus.firstname = true;}
+    manageUserObject();
     resabutton.disabled = checkallinputs();
+}
+// Have to create, delete or modify user object 
+// depending of the manually entered fields status. 
+function manageUserObject() {
+    cardid.value = mobile.value = mail.value = ""   // Manually enter a firstname so clear cardid
+                                                    // related fields
+    if(formstatus.firstname && formstatus.lastname) {
+        activeuser = theusers.searchUser("");   // Perform a dummy search
+        activeuser.fname = firstname.value;
+        activeuser.lname = lastname.value;
+        activeuser.found = true;
+    }
+    console.log(activeuser);
 }
 // Resa  handler
 // It is assumed than when coming here all controls are done
 // 1 / Bikes are available
 // 2 - User lname and fname are both ok
 function BookDebookBike() {
-    if(activeuser.activeresa) { 
-        thecity.BookDebookBike(true);           // Book
+    if(!activeuser.activeresa) { 
+        thecity.BookBike();           // Book
         resabutton.innerText = "Libérer";
         activeuser.activeresa = true;
         activeuser.reservation = {
@@ -177,7 +202,7 @@ function BookDebookBike() {
         resatime.innerText = `${activeuser.reservation.resatime}`
     }
     else {
-        thecity.BookDebookBike(false);          // Debook
+        thecity.DebookBike(activeuser.reservation.station);         // Debook
         resabutton.innerText = "Réserver";
         activeuser.activeresa = false;
         activeuser.reservation = {  };

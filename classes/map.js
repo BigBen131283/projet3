@@ -43,17 +43,17 @@ export default class map {
     this.map = null;
     this.center = [0,0];
     this.latLngBounds = [];
-    this.markers = [];      // Manage markers displayed on the map
+    this.markers = [];                              // Manage markers displayed on the map
     this.thestations = new stations(this.cityname);
     this.stationstodisplay = [];
-    this.thestations.loadStations()
-      .then( (resp) => {
+    // Load the associated stations
+    this.thestations.loadStations().then( (resp) => {
         this.displayStations();
       })
       .catch( (error) => {
         this.log(error);
       });
-    this.stationdetails = {};           // Currently selected station in the interface
+    this.selectedstation = {};           // Currently selected station in the interface
     // Just for fun, get user position
     // We could imagine to create the map directly on user position
     // But his location will probably not be in a JCDECAUX managed city
@@ -131,14 +131,14 @@ export default class map {
       // Sorry, have to put handler code here as there is no access to "this"
       // if the code is located in external function
       citymarker.on('click',(e) => {
-        this.stationdetails = {};
+        this.selectedstation = {};
         // Should ALWAYS find the station as this function call
         // is triggered by a mouse event on the station !
         for(let i = 0; i < this.stationstodisplay.length; ++i) {
           if(this.stationstodisplay[i].number === e.sourceTarget.options.title) {
-            this.stationdetails = this.stationstodisplay[i];
+            this.selectedstation = this.stationstodisplay[i];
             // Refresh main page as a new station has been selected
-            window.postMessage({origin: 'MAPJS-UPDATEUI', stationobject: this.stationdetails} ); 
+            window.postMessage({origin: 'MAPJS-UPDATEUI', stationobject: this.selectedstation} ); 
           }
         }
       });
@@ -148,33 +148,60 @@ export default class map {
     }
   }
   // ----------------------------------------------- 
-  BookDebookBike(bookdebookflag) {
-    this.log(`Search marker ${this.stationdetails.number}` );
+  BookBike() {
+    this.log(`Search marker ${this.selectedstation.number}` );
     // Identify the marker to be modified by the reservation action
     for(let i = 0; i < this.markers.length; ++i) {
-      if(this.markers[i].options.title === this.stationdetails.number) {
-        this.stationdetails.available_bikes--;
-        this.stationdetails.resabike = true;    // Set the reservation marker for this station
+      if(this.markers[i].options.title === this.selectedstation.number) {
+        this.selectedstation.available_bikes--;
+        this.selectedstation.resabike = true;    // Set the reservation marker for this station
         // Update the UI with -1 bike and the resa color
         this.markers[i].remove();
         // Redisplay the modified marker
         let nbstations = this.markers.length;
-        let citymarker = L.marker(this.stationdetails.position, 
+        let citymarker = L.marker(this.selectedstation.position, 
           {
-            icon: this.#createStationIcon(nbstations, this.stationdetails),
+            icon: this.#createStationIcon(nbstations, this.selectedstation),
             draggable: false,
             clickable: true,
-            title: this.stationdetails.number,
-          }).bindPopup(this.stationdetails.name);
+            title: this.selectedstation.number,
+          }).bindPopup(this.selectedstation.name);
         citymarker.addTo(this.map);
         // Trigger a refresh of the main page
-        window.postMessage({origin: 'MAPJS-BOOKDEBOOK', stationobject: this.stationdetails} ); 
+        window.postMessage({origin: 'MAPJS-BOOK', stationobject: this.selectedstation} ); 
         break;
       }
     }
   }
+  // ----------------------------------------------- 
+  DebookBike(station) {
+    this.log(`Search marker ${station.number}` );
+    // Identify the marker to be modified by the reservation action
+    for(let i = 0; i < this.markers.length; ++i) {
+      if(this.markers[i].options.title === station.number) {
+        station.available_bikes++;
+        station.resabike = false;    // Set the reservation marker for this station
+        // Update the UI with +1 bike and the resa color
+        this.markers[i].remove();
+        // Redisplay the modified marker
+        let nbstations = this.markers.length;
+        let citymarker = L.marker(station.position, 
+          {
+            icon: this.#createStationIcon(nbstations, station),
+            draggable: false,
+            clickable: true,
+            title: station.number,
+          }).bindPopup(station.name);
+        citymarker.addTo(this.map);
+        // Trigger a refresh of the main page
+        window.postMessage({origin: 'MAPJS-DEBOOK', stationobject: station}); 
+        break;
+      }
+    }
+  }
+  // ----------------------------------------------- 
   getSelectedStation() { 
-    return this.stationdetails;
+    return this.selectedstation;
   }
   // ----------------------------------------------- 
   //  Some private functions

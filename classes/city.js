@@ -46,9 +46,13 @@ export default class city {
     this.themap.changeMap(this.selectedcity);
     return;
   }
-  // ----------------------------------------------- 
-  BookDebookBike(bookdebookflag) {
-    this.themap.BookDebookBike();
+  // -----------------------------------------------
+  BookBike() {
+    this.themap.BookBike();
+  }
+  // -----------------------------------------------
+  DebookBike(station) {
+    this.themap.DebookBike(station);
   }
   // ----------------------------------------------- 
   getSelectedStation() {
