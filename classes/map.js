@@ -165,6 +165,9 @@ export default class map {
           }).bindPopup(this.stationdetails.name);
         citymarker.addTo(this.map);
         this.#updateStationUI(this.stationdetails);
+        this.bikesavailable = thestation.available_bikes === 0 ? false: true;
+        // Trigger an evaluation of the Resa button status
+        window.postMessage({origin: 'MAPJS-BOOKDEBOOK', stationobject: this.stationdetails} ); 
         break;
       }
     }
@@ -215,12 +218,8 @@ export default class map {
         thestation.available_bike_stands;
     document.getElementById("remain_bikes").innerText = 
         thestation.available_bikes;
-    // If the selected station has no available bike, or the username 
-    // or the userpassword are not filled, then no need to 
-    // permit a reservation so disable the button
-    this.bikesavailable = thestation.available_bikes === 0 ? false: true;
     // Trigger an evaluation of the Resa button status
-    window.postMessage({origin: 'MAPJS', bikesavailable: this.bikesavailable} ); 
+    window.postMessage({origin: 'MAPJS-UPDATEUI', availablebikes: thestation.available_bikes} ); 
   }
   // ----------------------------------------------- 
   #cleanupStationUI() {

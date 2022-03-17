@@ -77,8 +77,12 @@ setInterval(autoDefil, 5000);
 // the data it wants to communicate
 window.addEventListener('message', (event) => {
     switch( event.data.origin ) {
-        case 'MAPJS': 
-            formstatus.bikesavailable = event.data.bikesavailable;     // Directly receives station bike status
+        case 'MAPJS-BOOKDEBOOK': 
+            formstatus.bikesavailable = event.data.stationobject.available_bikes;     // Directly receives station bike status
+            resabutton.disabled = checkallinputs();
+            break;
+        case 'MAPJS-UPDATEUI': 
+            formstatus.bikesavailable = event.data.availablebikes === 0 ? false : true;     // Directly receives station bike status
             resabutton.disabled = checkallinputs();
             break;
     }           
