@@ -11,12 +11,13 @@
     Mar 16 2022 Work on cardid, bike resa...
     Mar 17 2022 Work on cardid, bike resa...
                 Reorg display action so that they all take place in script.js
+    Mar 18 2022 Book / debook 
 
 */
 import city from './classes/city.js'
 import users from './classes/users.js';
 
-const version = "script.js 1.47 Mar 17 2022 : "
+const version = "script.js 1.48 Mar 18 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -91,19 +92,9 @@ setInterval(autoDefil, 5000);
 // ---------------------------------------------------------------------------------
 window.addEventListener('message', (event) => {
     switch( event.data.origin ) {
-        case 'MAPJS-BOOK': 
-            // Receives the whole station object
-            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ? false : true;
-            activeuser.reservation.station = event.data.stationobject;
-            resabutton.disabled = checkallinputs();
-            break;
-        case 'MAPJS-DEBOOK': 
-            // Receives the whole station object
-            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ? false : true;
-            activeuser.reservation.station = {};
-            resabutton.disabled = checkallinputs();
-            break;
-        case 'MAPJS-UPDATEUI': 
+        case 'MAPJS-BOOK':
+        case 'MAPJS-DEBOOK':
+        case 'MAPJS-SELECTSTATION': // Receives a station object
             address.innerText = (event.data.stationobject.address === "" ? 
                         event.data.stationobject.name :
                         event.data.stationobject.address);
@@ -114,12 +105,13 @@ window.addEventListener('message', (event) => {
                          false : true;     // Update station bike status
             resabutton.disabled = checkallinputs();
             break;
-        case 'MAPJS-CLEANUI': 
+        case 'MAPJS-CHANGECITY': 
             address.innerText = "";
             allplaces.innerText = "";
             remainplaces.innerText = ""; 
             remainbikes.innerText = "";
             formstatus.bikesavailable = false;
+            BookDebookBike();
             resabutton.disabled = checkallinputs();
             break;        
     }           

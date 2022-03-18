@@ -8,6 +8,7 @@
     Mar 11 2022   Station list is back to this object
     Mar 16 2022   Add an attribute to the station entry, reflecting the station
                   reservation status. If a bike is reserved then set a flag
+    Mar 18 2022   Add methods to act on individual station in the list
 */
 export default class stations {
 
@@ -15,7 +16,7 @@ export default class stations {
   #apikey = "0b872e25a940eeebc3e9a35346780b1074916a8f";
 
   constructor (cityname) {
-      this.version = "stations.js 1.25 Mar 16 2022 : "
+      this.version = "stations.js 1.26 Mar 18 2022 : "
       this.cityname = cityname;
       this.citystations = [];
   }
@@ -43,6 +44,23 @@ export default class stations {
         }
       )
     })
+  }
+  // ----------------------------------------------- 
+  getOneStation(stationnumber) {
+    for(let i = 0; i < this.citystations.length; ++i) {
+      if(this.citystations[i].number === stationnumber)
+        return this.citystations[i];
+    }
+    return null;
+  }
+  // ----------------------------------------------- 
+  updateOneStation(station) {
+    for(let i = 0; i < this.citystations.length; ++i) {
+      if(this.citystations[i].number === station.number){
+        this.citystations[i] = station;
+        break;
+      }
+    }
   }
   // ----------------------------------------------- 
   getStations() {

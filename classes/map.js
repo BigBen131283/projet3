@@ -91,7 +91,7 @@ export default class map {
   // ----------------------------------------------- 
   changeMap(selectedcity) {
     // Clear all station fields as the map changes
-    window.postMessage({origin: 'MAPJS-CLEANUI'} );
+    window.postMessage({origin: 'MAPJS-CHANGECITY'} );
     this.map.setView(selectedcity.coord);
     this.cityname = selectedcity.name;
     this.citycoordinates = selectedcity.coord;
@@ -142,7 +142,7 @@ export default class map {
             this.selectedstation = this.stationslist[i];
             this.map.setView(this.selectedstation.position, this.zoom);   // Center the map on the clicked station
             // Refresh main page as a new station has been selected
-            window.postMessage({origin: 'MAPJS-UPDATEUI', stationobject: this.selectedstation} ); 
+            window.postMessage({origin: 'MAPJS-SELECTSTATION', stationobject: this.selectedstation} ); 
           }
         }
       });
@@ -152,83 +152,20 @@ export default class map {
   }
   // ----------------------------------------------- 
   BookBike() {
-    this.log(`Search marker ${this.selectedstation.number}` );
-    let count = 0;
-    this.markergroup.eachLayer( (onemarker) => {
-      ++count;
-      if(onemarker.options.title === this.selectedstation.number) {
-        console.log(onemarker);
-        this.markergroup.removeLayer(onemarker);
-        this.selectedstation.available_bikes--;
-        //this.markergroup.clearLayers();
-      }
-    })
-    console.log(`Examined ${count} layers before delete`);
-    count = 0;
-    this.markergroup.eachLayer( (onemarker) => {
-      ++count;
-    })
-    console.log(`Examined ${count} layers after one delete`);
-    count = 0;
+    this.selectedstation.available_bikes--;
+    this.thestations.updateOneStation(this.selectedstation);
+    console.log(this.thestations.getOneStation(this.selectedstation.number));
     this.markergroup.clearLayers();
-    this.markergroup.eachLayer( (onemarker) => {
-      ++count;
-    })
-    console.log(`Examined ${count} layers after clear all`);
-    /*
-    // Identify the marker to be modified by the reservation action
-    for(let i = 0; i < this.markers.length; ++i) {
-      if(this.markers[i].options.title === this.selectedstation.number) {
-        this.markers[i].number--;
-        this.selectedstation.available_bikes--;
-        this.selectedstation.resabike = true;    // Set the reservation marker for this station
-        // Update the UI with -1 bike and the resa color
-        this.markers[i].remove();
-        // Redisplay the modified marker
-        let nbstations = this.markers.length;
-        this.markers[i] = L.marker(this.selectedstation.position, 
-          {
-            icon: this.#createStationIcon(this.selectedstation),
-            draggable: false,
-            clickable: true,
-            title: this.selectedstation.number,
-          }).bindPopup(this.selectedstation.name);
-          this.markers[i].addTo(this.map);
-        // Trigger a refresh of the main page
-        window.postMessage({origin: 'MAPJS-BOOK', stationobject: this.selectedstation} ); 
-        break;
-      }
-    }
-    */
+    this.displayStations();
+    window.postMessage({origin: 'MAPJS-BOOK', stationobject: this.selectedstation} ); 
   }
   // ----------------------------------------------- 
   DebookBike(station) {
-    this.log(`Search marker ${station.number}` );
-    /* 
-    // Identify the marker to be modified by the reservation action
-    for(let i = 0; i < this.markers.length; ++i) {
-      if(this.markers[i].options.title === station.number) {
-        this.markers[i].number++;
-        station.available_bikes++;
-        station.resabike = false;    // Set the reservation marker for this station
-        // Update the UI with +1 bike and the resa color
-        this.markers[i].remove();
-        // Redisplay the modified marker
-        let nbstations = this.markers.length;
-        this.markers[i] = L.marker(station.position, 
-          {
-            icon: this.#createStationIcon(station),
-            draggable: false,
-            clickable: true,
-            title: station.number,
-          }).bindPopup(station.name);
-          this.markers[i].addTo(this.map);
-        // Trigger a refresh of the main page
-        window.postMessage({origin: 'MAPJS-DEBOOK', stationobject: station}); 
-        break;
-      }
-    }
-    */
+    station.available_bikes++;
+    this.thestations.updateOneStation(station);
+    this.markergroup.clearLayers();
+    this.displayStations();
+    window.postMessage({origin: 'MAPJS-DEBOOK', stationobject: station} ); 
   }
   // ----------------------------------------------- 
   getSelectedStation() { 
@@ -274,7 +211,6 @@ export default class map {
   move(moveevent) {
     this.latLngBounds = this.map.getBounds();
     this.center = this.map.getCenter();
-    this.displayStations();
   }
    // ----------------------------------------------- 
   //  Misc
