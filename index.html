@@ -33,41 +33,24 @@
                         <select name="cityselection" id="cityselect"></select>
                         </div>
                     <h2>Détail de la station</h2>
-                    <p>Adresse : <span id="address"></span></p>
+                    <p class="address">Adresse : <span class="address" id="address"></span></p>
                     <p>Places existantes : <span id="all_places"></span></p>
                     <p>Places libres : <span id="remain_places"></span></p>
                     <p>Vélos disponibles : <span id="remain_bikes"></span></p>
-                    <div id="resaform">
-                        <div class="line">
-                            <label for="cardID">ID de carte</label>
-                            <input type="text" id="cardID">
-                        </div>
-                        <div class="line">
-                            <label for="last_name">Nom (*)</label>
-                            <input type="text" id="last_name">
-                        </div>
-                        <div class="line">
-                            <label for="first_name">Prénom  (*)</label>
-                            <input type="text" id="first_name">
-                        </div>
-                        <div class="line">
-                            <label for="mobile">Téléphone</label>
-                            <input type="text" id="mobile">
-                        </div>
-                        <div class="line">
-                            <label for="mail">Mail</label>
-                            <input type="text" id="mail">
-                        </div>
-                        <div class="button">
-                            <button id="resa">Réserver</button>
-                        </div>
+                    <div class="gridcontainer">
+                        <div class="gridcard"><p>ID de carte</p></div>
+                        <div class="gridcardid"><input id="cardid" type="text"></div>   
+                        <div class="gridlnamelabel"><p>Nom (*)</p></div>   
+                        <div class="gridlname"><input type="text" id="last_name">  </div>   
+                        <div class="gridfnamelabel"><p>Prenom (*)</p></div>   
+                        <div class="gridfname"><input type="text" id="first_name"></div>
+                        <div class="gridmobilelabel"><p>Téléphone</p></div>   
+                        <div class="gridmobile"><input type="text" id="mobile"></div>   
+                        <div class="gridmaillabel"><p>Mail</p></div>   
+                        <div class="gridmail"><input type="text" id="mail"></div>
+                        <div class="gridbutton"><button id="resa">Réserver</button></div>
                     </div>
-                </div>
-            </div>
-            <div class="parttwo">
-                <p>Vélo réservé à la station <span id="station"></span> par <span id="client"></span></p>
-                <p>Date et heure de réservation : <span id="resatime"></span></p>
-                <p>Temps restant : <span id="timer"></span></p>
+        </div>
             </div>
         </div>
     </body>

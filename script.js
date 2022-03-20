@@ -12,12 +12,13 @@
     Mar 17 2022 Work on cardid, bike resa...
                 Reorg display action so that they all take place in script.js
     Mar 18 2022 Book / debook 
+    Mar 20 2022 Book / debook, change screen mockup
 
 */
 import city from './classes/city.js'
 import users from './classes/users.js';
 
-const version = "script.js 1.48 Mar 18 2022 : "
+const version = "script.js 1.50 Mar 20 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -48,13 +49,13 @@ let address = document.getElementById("address");
 let allplaces = document.getElementById("all_places");
 let remainplaces = document.getElementById("remain_places");
 let remainbikes = document.getElementById("remain_bikes");
-let cardid = document.getElementById("cardID");
+let cardid = document.getElementById("cardid");
 let lastname = document.getElementById("last_name");
 let firstname = document.getElementById("first_name");
 let mail = document.getElementById("mail");
 let mobile = document.getElementById("mobile");
-let resastation = document.getElementById("station");
-let resaclient = document.getElementById("client");
+let resastation = document.getElementById("resastation");
+let resaclient = document.getElementById("resauser");
 let resatime = document.getElementById("resatime");
 let resatimer = document.getElementById("timer");
 // Add necessary event handlers
@@ -94,6 +95,10 @@ window.addEventListener('message', (event) => {
     switch( event.data.origin ) {
         case 'MAPJS-BOOK':
         case 'MAPJS-DEBOOK':
+            formstatus.bikesavailable = event.data.stationobject.available_bikes === 0 ?
+                         false : true;     // Update station bike status
+            resabutton.disabled = checkallinputs();
+            break;
         case 'MAPJS-SELECTSTATION': // Receives a station object
             address.innerText = (event.data.stationobject.address === "" ? 
                         event.data.stationobject.name :
@@ -189,9 +194,9 @@ function BookDebookBike() {
             "station": thecity.getSelectedStation(),    
             "resatime": new Date()
         };
-        resastation.innerText = `${activeuser.reservation.station.name}`;
-        resaclient.innerText = `${activeuser.fname} ${activeuser.lname}`;
-        resatime.innerText = `${activeuser.reservation.resatime}`
+        resastation.innerText = activeuser.reservation.station.name;
+        resaclient.innerText = activeuser.fname +  activeuser.lname;
+        resatime.innerText = activeuser.reservation.resatime;
     }
     else {
         thecity.DebookBike(activeuser.reservation.station);         // Debook

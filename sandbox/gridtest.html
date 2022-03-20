@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test grid</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="item1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus ratione animi consectetur vitae consequatur eveniet nam enim explicabo voluptates, culpa vel sapiente numquam! Asperiores, neque fuga assumenda voluptatem quo provident?</div>
+        <div class="item2">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Provident autem facere perspiciatis consequuntur ipsam! Voluptate error reprehenderit culpa adipisci quam ad obcaecati maiores amet illo asperiores. Quibusdam, debitis tenetur sequi excepturi quisquam architecto, nobis molestiae iusto magni sunt ad sapiente saepe porro, voluptates id laboriosam explicabo ab soluta ut delectus?</div>
+        <div class="item3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque cupiditate laboriosam temporibus consectetur iste pariatur repellat aspernatur quia, minus omnis!</div>
+        <div class="item4">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Natus delectus ullam dolorum amet quaerat deleniti maiores mollitia? Voluptates, eos aliquid. Voluptatem quo nisi eveniet at ab asperiores eius dignissimos corrupti vitae dolor architecto quia, aut quibusdam, qui tempore repellat! Necessitatibus magni voluptas repellat voluptates minima, libero sint doloribus cumque suscipit dolor sunt maxime quaerat consequatur quos impedit earum ab consectetur. Explicabo ipsam, laudantium neque porro in dignissimos modi atque mollitia.</div>
+      </div>
+</body>
+</html>
+<style>
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-gap: 2rem;
+  grid-auto-rows: 100px;
+  grid-template-areas:
+    "a a b b b b b b"
+    "c c c c d d d d";
+  align-items: start;
+}
+.item1 {
+  grid-area: a;
+  border: 1px red solid;
+}
+.item2 {
+  grid-area: b;
+  border: 1px blue solid;
+  align-self: start;
+}
+.item3 {
+  grid-area: c;
+  border: 1px green solid;
+  align-self: center;
+}
+.item4 {
+  grid-area: d;
+  border: 1px darkmagenta solid;
+  align-self: end;
+}
+</style>

@@ -1,5 +1,9 @@
 /*general*/
 
+:root {
+    --inputboxheight: 1rem
+}
+
 body
 {
     font-size: 1rem;
@@ -48,14 +52,6 @@ h1, h4
     justify-content: center;
     align-items: center;
     width: 100%;
-}
-
-.parttwo
-{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
 
 .map
@@ -114,4 +110,45 @@ h1, h4
     margin-top: 2rem;
     margin-right: 10px;
 }
+/*-----------------------------------------------------
+    Yves tests, grid is back !!!!!
+-----------------------------------------------------*/
+.gridcontainer {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-gap: .5rem;
+    grid-auto-rows: 2rem;
+    grid-template-areas:
+    "a a a a b b b b"
+    "c c c c d d d d"
+    "e e e e f f f f"
+    "g g g g h h h h"
+    "i i i i j j j j"
+    "k k k k k k k k"
+}
 
+.gridcard { align-self: center; grid-area: a; }
+.gridcardid { grid-area: b; }
+.gridlnamelabel { align-self: center; grid-area: c; }
+.gridlname { grid-area: d; }
+.gridfnamelabel { align-self: center; grid-area: e; }
+.gridfname { grid-area: f; }
+.gridmobilelabel {align-self: center;  grid-area: g; }
+.gridmobile { grid-area: h; }
+.gridmaillabel {align-self: center;  grid-area: i; }
+.gridmail { grid-area: j; }
+.gributton { align-items: center; align-self: center; grid-area: k;}
+        
+/*
+#cardidlabel { grid-area: 10;}
+#cardid { grid-area: 100;}
+#lastnamelabel { grid-area: 20;}
+#last_name { grid-area: 200;}
+#firstnamelabel { grid-area: 30;}
+#first_name { grid-area: 300;}
+
+grid-template-areas: 
+    "10 100"
+    "20 200"
+    "30 300";
+*/
