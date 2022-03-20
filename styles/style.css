@@ -100,10 +100,7 @@ h1, h4
     "aa bb bb"
     "cc cc dd"
     "ee ee ff"
-    "gg gg hh"
-    "iii jjj jjj"
-    "ii jj jj"
-    "kk ll ll";
+    "gg gg hh";
     padding: 1rem;
 }
 
@@ -117,12 +114,6 @@ h1, h4
 .gfreeD {align-self: center; grid-area: ff; }
 .gbikesL {align-self: center; grid-area: gg; }
 .gbikesD {align-self: center; grid-area: hh; }
-.gresaclientL {align-self: center; grid-area: iii; }
-.gresaclientD {align-self: center; grid-area: jjj; }
-.gresastationL {align-self: center; grid-area: ii; }
-.gresastationD {align-self: center; grid-area: jj; }
-.gresaheureL {align-self: center; grid-area: kk; }
-.gresaheureD {align-self: center; grid-area: ll; }
 
 .griduser {
     display: grid;
@@ -151,3 +142,26 @@ h1, h4
 .gridmail { align-self: center; grid-area: j;  }
 .gridbutton { align-self: center; grid-area: k;  margin-top: 1rem;
                         margin-bottom: 1rem;}
+.gridresa {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid black;
+    border-radius: 10px;
+    grid-gap: .5rem;
+    grid-auto-rows: 1.5rem;
+    grid-template-areas:
+    "iii jjj jjj"
+    "ii jj jj"
+    "kk ll ll";
+    margin: .5rem;
+    padding: .5rem;
+    background-color: darkcyan;
+    color: white;
+}
+
+.gresaclientL {align-self: center; grid-area: iii; }
+.gresaclientD {align-self: center; grid-area: jjj; }
+.gresastationL {align-self: center; grid-area: ii; }
+.gresastationD {align-self: center; grid-area: jj; }
+.gresaheureL {align-self: center; grid-area: kk; }
+.gresaheureD {align-self: center; grid-area: ll; }

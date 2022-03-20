@@ -17,8 +17,9 @@
 */
 import city from './classes/city.js'
 import users from './classes/users.js';
+import { getDateTime, getDate, getTime } from './utilities/datetime.js'
 
-const version = "script.js 1.51 Mar 20 2022 : "
+const version = "script.js 1.52 Mar 20 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -192,7 +193,7 @@ function BookDebookBike() {
         activeuser.activeresa = true;
         activeuser.reservation = {
             "station": thecity.getSelectedStation(),    
-            "resatime": new Date()
+            "resatime": getDateTime()
         };
         resastation.innerText = activeuser.reservation.station.name;
         resaclient.innerText = activeuser.fname +  activeuser.lname;
