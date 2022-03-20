@@ -1,9 +1,5 @@
 /*general*/
 
-:root {
-    --inputboxheight: 1rem
-}
-
 body
 {
     font-size: 1rem;
@@ -85,70 +81,73 @@ h1, h4
     padding-right: 6px;
 }
 
-#resaform
-{
-    max-width: 300px;
-    margin-bottom: .5rem;
-}
-
-.line
-{
-    display: flex;
-    justify-content: space-between;
-    padding-right: 10%;
-    margin-top: 0.5rem;
-    margin-bottom: 00.5rem;
-}
 .button
 {
     display: flex;
     justify-content: center;
 }
 
-#listbox {
-    font-size: 1rem;
-    margin-top: 2rem;
-    margin-right: 10px;
-}
 /*-----------------------------------------------------
-    Yves tests, grid is back !!!!!
+    Yves tests, grid is back !!!!! For fun...
 -----------------------------------------------------*/
-.gridcontainer {
+.gridstation {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-gap: .5rem;
-    grid-auto-rows: 2rem;
+    grid-auto-rows: 1.5rem;
     grid-template-areas:
-    "a a a a b b b b"
-    "c c c c d d d d"
-    "e e e e f f f f"
-    "g g g g h h h h"
-    "i i i i j j j j"
-    "k k k k k k k k"
+    "li lib lib"
+    "aa bb bb"
+    "cc cc dd"
+    "ee ee ff"
+    "gg gg hh"
+    "iii jjj jjj"
+    "ii jj jj"
+    "kk ll ll";
+    padding: 1rem;
 }
 
-.gridcard { align-self: center; grid-area: a; }
-.gridcardid { grid-area: b; }
-.gridlnamelabel { align-self: center; grid-area: c; }
-.gridlname { grid-area: d; }
-.gridfnamelabel { align-self: center; grid-area: e; }
-.gridfname { grid-area: f; }
-.gridmobilelabel {align-self: center;  grid-area: g; }
-.gridmobile { grid-area: h; }
-.gridmaillabel {align-self: center;  grid-area: i; }
-.gridmail { grid-area: j; }
-.gributton { align-items: center; align-self: center; grid-area: k;}
-        
-/*
-#cardidlabel { grid-area: 10;}
-#cardid { grid-area: 100;}
-#lastnamelabel { grid-area: 20;}
-#last_name { grid-area: 200;}
-#firstnamelabel { grid-area: 30;}
-#first_name { grid-area: 300;}
+.cityselectL {align-self: center; grid-area: li; }
+.cityselectD {align-self: center; grid-area: lib; }
+.gaddressL {align-self: center; grid-area: aa; }
+.gaddressD {align-self: center; grid-area: bb; }
+.gplacesL {align-self: center; grid-area: cc; }
+.gplacesD {align-self: center; grid-area: dd; }
+.gfreeL {align-self: center; grid-area: ee; }
+.gfreeD {align-self: center; grid-area: ff; }
+.gbikesL {align-self: center; grid-area: gg; }
+.gbikesD {align-self: center; grid-area: hh; }
+.gresaclientL {align-self: center; grid-area: iii; }
+.gresaclientD {align-self: center; grid-area: jjj; }
+.gresastationL {align-self: center; grid-area: ii; }
+.gresastationD {align-self: center; grid-area: jj; }
+.gresaheureL {align-self: center; grid-area: kk; }
+.gresaheureD {align-self: center; grid-area: ll; }
 
-grid-template-areas: 
-    "10 100"
-    "20 200"
-    "30 300";
-*/
+.griduser {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: .5rem;
+    grid-auto-rows: 1.5rem;
+    grid-template-areas:
+    "a b b"
+    "c d d"
+    "e f f"
+    "g h h"
+    "i j j"
+    ". k .";
+    padding: .5rem;
+}
+
+.gridcard { align-self: center; grid-area: a;}
+.gridcardid { align-self: center;  grid-area: b; }
+.gridlnamelabel { align-self: center; grid-area: c; }
+.gridlname { align-self: center;  grid-area: d;  }
+.gridfnamelabel { align-self: center; grid-area: e; }
+.gridfname { align-self: center;  grid-area: f;}
+.gridmobilelabel {align-self: center;  grid-area: g; }
+.gridmobile { align-self: center; grid-area: h; }
+.gridmaillabel {align-self: center;  grid-area: i; } 
+.gridmail { align-self: center; grid-area: j;  }
+.gridbutton { align-self: center; grid-area: k;  margin-top: 1rem;
+                        margin-bottom: 1rem;}

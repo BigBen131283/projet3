@@ -28,16 +28,26 @@
             <div class="partone">
                 <div id="map" class="map"></div>
                 <div class="detail">
-                    <div id="listbox">
-                        <label for="cityselection">Choisissez une ville</label>
-                        <select name="cityselection" id="cityselect"></select>
-                        </div>
                     <h2>Détail de la station</h2>
-                    <p class="address">Adresse : <span class="address" id="address"></span></p>
-                    <p>Places existantes : <span id="all_places"></span></p>
-                    <p>Places libres : <span id="remain_places"></span></p>
-                    <p>Vélos disponibles : <span id="remain_bikes"></span></p>
-                    <div class="gridcontainer">
+                    <div class="gridstation">
+                        <div class="cityselectL"><p>Ville : </p></div>
+                        <div class="cityselectD"><select name="cityselection" id="cityselect"></select></div>
+                        <div class="gaddressL"><p class="address">Adresse : </p></div>
+                        <div class="gaddressD"><span class="address" id="address"></span></div>
+                        <div class="gplacesL"><p>Places existantes : </p></div>
+                        <div class="gplacesD"><span id="all_places"></span></div>
+                        <div class="gfreeL"><p>Places libres : </p></div>
+                        <div class="gfreeD"><span id="remain_places"></span></div>
+                        <div class="gbikesL"><p>Vélos disponibles : </p></div>
+                        <div class="gbikesD"><span id="remain_bikes"></span></div>
+                        <div class="gresaclientL"><p>Client : </p></div>
+                        <div class="gresaclientD"><span id="resauser"></span></div>
+                        <div class="gresastationL"><p>Station : </p></div>
+                        <div class="gresastationD"><span id="resastation"></span></div>
+                        <div class="gresaheureL"><p>Heure : </p></div>
+                        <div class="gresaheureD"><span id="resatime"></span></div>
+                    </div>
+                    <div class="griduser">
                         <div class="gridcard"><p>ID de carte</p></div>
                         <div class="gridcardid"><input id="cardid" type="text"></div>   
                         <div class="gridlnamelabel"><p>Nom (*)</p></div>   

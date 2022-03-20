@@ -18,7 +18,7 @@
 import city from './classes/city.js'
 import users from './classes/users.js';
 
-const version = "script.js 1.50 Mar 20 2022 : "
+const version = "script.js 1.51 Mar 20 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
