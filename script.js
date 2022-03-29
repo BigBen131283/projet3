@@ -183,7 +183,7 @@ function manageUserObject() {
     console.log(activeuser);
 }
 // Resa  handler
-// It is assumed than when coming here all controls are done
+// It is assumed that when coming here all controls are done
 // 1 / Bikes are available
 // 2 - User lname and fname are both ok
 function BookDebookBike() {
