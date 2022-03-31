@@ -20,7 +20,7 @@ import city from './classes/city.js'
 import users from './classes/users.js';
 import { getDateTime, getDate, getTime } from './utilities/datetime.js'
 
-const version = "script.js 1.55 Mar 31 2022 : "
+const version = "script.js 1.58 Mar 31 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -59,6 +59,8 @@ let mobile = document.getElementById("mobile");
 let resastation = document.getElementById("resastation");
 let resaclient = document.getElementById("resauser");
 let resatime = document.getElementById("resatime");
+let resaexpirationdelay = 10; // Seconds
+let resasessiontimeremaining;
 let resatimer = document.getElementById("timer");
 // Add necessary event handlers
 boutonPause.addEventListener('click', togglePause);
@@ -72,7 +74,7 @@ cardid.addEventListener('keyup', () => delay(cardidinput));
 lastname.addEventListener('keyup', () => delay(lastnameinput));
 firstname.addEventListener('keyup', () => delay(firstnameinput));
 // Reservation button monitor
-resabutton.addEventListener('click', () => BookDebookBike());
+resabutton.addEventListener('click', () => BookDebookBike('userclick'));
 resabutton.disabled = checkallinputs;
 // Load the list box with supported cities
 for(let i = 0; i < allcities.length; i++) {
@@ -117,7 +119,7 @@ window.addEventListener('message', (event) => {
             remainplaces.innerText = ""; 
             remainbikes.innerText = "";
             formstatus.bikesavailable = false;
-            if(activeuser.found) BookDebookBike();
+            if(activeuser.found) BookDebookBike('citychange');
             resabutton.disabled = checkallinputs();
             resastation.innerText = resaclient.innerText =  resatime.innerText = "";
             break;        
@@ -185,23 +187,54 @@ function manageUserObject() {
 // It is assumed that when coming here all controls are done
 // 1 / Bikes are available
 // 2 - User lname and fname are both ok
-function BookDebookBike() {
-    if(activeuser.activeresa) { 
-        // Debook and then rebook. The user clicked the resa button but already have 
-        // a reserved bikeSo free the previously reserved bike and book the new one.
-        // It can be in the same station or another one. 
-        remainbikes.innerText = activeuser.reservation.station.available_bikes + 1;
-        thecity.DebookBike(activeuser.reservation.station);
-        thecity.BookBike();
-        bookUpdate();
-    }
-    else {
-        // Book. 1st resa by user, normal situation
-        thecity.BookBike();
-        bookUpdate();
+function BookDebookBike(action) {
+    switch(action) {
+        case 'userclick':
+            if(activeuser.activeresa) { 
+                // Debook and then rebook. The user clicked the resa button but already have 
+                // a reserved bikeSo free the previously reserved bike and book the new one.
+                // It can be in the same station or another one. 
+                remainbikes.innerText = activeuser.reservation.station.available_bikes + 1;
+                thecity.DebookBike(activeuser.reservation.station);
+                thecity.BookBike();
+                bookUpdate();
+            }
+            else {
+                // Book. 1st resa by user, normal situation
+                thecity.BookBike();
+                bookUpdate();
+            }
+            resasessiontimeremaining = resaexpirationdelay;
+            resatimer = setInterval(resaExpirationCheck, 1000);
+            break;
+        case 'citychange':
+            if(activeuser.activeresa) {
+                // Free the reserved bike before switching to the new city
+                remainbikes.innerText = '';
+                thecity.DebookBike(activeuser.reservation.station);
+                activeuser.activeresa = false;
+                activeuser.reservation = {
+                    "station": {},  
+                    "resatime": getDateTime()
+                };
+                clearInterval(resatimer);   // Stop the timer 
+            }
+            break;
+        case 'timer':
+            // Free the reserved bike before switching to the new city
+            remainbikes.innerText = activeuser.reservation.station.available_bikes + 1;
+            thecity.DebookBike(activeuser.reservation.station);
+            activeuser.activeresa = false;
+            activeuser.reservation = {
+                "station": {},  
+                "resatime": getDateTime()
+            };
+            resastation.innerText = resaclient.innerText =  resatime.innerText = "";
+            break;
+
     }
 }
-// Jsut to share code in BookDebbokBibe()
+// Just to share code in BookDebookBike()
 function bookUpdate() {
     activeuser.activeresa = true;
     activeuser.reservation = {
@@ -246,7 +279,23 @@ function switchCity() {
     resabutton.disabled = checkallinputs;
 }
 // ----------------------------------------------- 
+function resaExpirationCheck() {
+    resasessiontimeremaining--;
+    log(resasessiontimeremaining)
+    if( resasessiontimeremaining === 0) {
+        clearInterval(resatimer);
+        BookDebookBike('timer');
+    }
+}
+// ----------------------------------------------- 
+function secondsToString(seconds) {
+    let numdays = Math.floor(seconds / 86400);
+    let numhours = Math.floor((seconds % 86400) / 3600);
+    let numminutes = Math.floor(((seconds % 86400) % 3600) / 60);
+    let numseconds = ((seconds % 86400) % 3600) % 60;
+    return numminutes + " min " + numseconds + "s";
+}
+// ----------------------------------------------- 
 function log(message) {
     console.log(version + message);
 }
-
