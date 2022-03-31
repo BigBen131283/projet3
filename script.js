@@ -20,7 +20,7 @@ import city from './classes/city.js'
 import users from './classes/users.js';
 import { getDateTime, getDate, getTime } from './utilities/datetime.js'
 
-const version = "script.js 1.58 Mar 31 2022 : "
+const version = "script.js 1.59 Mar 31 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -59,6 +59,7 @@ let mobile = document.getElementById("mobile");
 let resastation = document.getElementById("resastation");
 let resaclient = document.getElementById("resauser");
 let resatime = document.getElementById("resatime");
+let resaexptime = document.getElementById("resaexp");
 let resaexpirationdelay = 10; // Seconds
 let resasessiontimeremaining;
 let resatimer = document.getElementById("timer");
@@ -281,8 +282,10 @@ function switchCity() {
 // ----------------------------------------------- 
 function resaExpirationCheck() {
     resasessiontimeremaining--;
+    resaexptime.innerText = secondsToString(resasessiontimeremaining);
     log(resasessiontimeremaining)
     if( resasessiontimeremaining === 0) {
+        resaexptime.innerText = '';
         clearInterval(resatimer);
         BookDebookBike('timer');
     }

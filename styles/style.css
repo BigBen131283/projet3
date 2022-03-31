@@ -92,6 +92,7 @@ h1, h4
 -----------------------------------------------------*/
 .gridstation {
     display: grid;
+    grid-template-rows: 0.8rem;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: .5rem;
     grid-auto-rows: 1.5rem;
@@ -117,6 +118,7 @@ h1, h4
 
 .griduser {
     display: grid;
+    grid-template-rows: 0.8rem;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: .5rem;
     grid-auto-rows: 1.5rem;
@@ -144,6 +146,10 @@ h1, h4
                         margin-bottom: 1rem;}
 .gridresa {
     display: grid;
+    grid-template-rows: 0.5rem;
+    row-gap: 2px;
+    font-size: .8rem;
+    font-style: italic;
     grid-template-columns: repeat(3, 1fr);
     border: 1px solid black;
     border-radius: 10px;
@@ -152,7 +158,8 @@ h1, h4
     grid-template-areas:
     "iii jjj jjj"
     "ii jj jj"
-    "kk ll ll";
+    "kk ll ll"
+    "mm nn nn";
     margin: .5rem;
     padding: .5rem;
     background-color: darkcyan;
@@ -165,3 +172,5 @@ h1, h4
 .gresastationD {align-self: center; grid-area: jj; }
 .gresaheureL {align-self: center; grid-area: kk; }
 .gresaheureD {align-self: center; grid-area: ll; }
+.gresaexptimeL {align-self: center; grid-area: mm; }
+.gresaexptimeD {align-self: center; grid-area: nn; }
