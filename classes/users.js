@@ -36,7 +36,7 @@ export default class user {
         })
     }
     // ---------------------------------------------
-    searchUser(cardid) {
+    searchUser(cardid = 9999) {
         let oneuser = { 
             "cardid": "UNKNOWN",
             "fname": "",

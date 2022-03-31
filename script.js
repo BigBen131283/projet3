@@ -20,7 +20,7 @@ import city from './classes/city.js'
 import users from './classes/users.js';
 import { getDateTime, getDate, getTime } from './utilities/datetime.js'
 
-const version = "script.js 1.53 Mar 31 2022 : "
+const version = "script.js 1.55 Mar 31 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -31,7 +31,7 @@ let isPaused = false
 let thecity = new city();
 let allcities =thecity.getCities();     // Get managed cities list
 let theusers = new users();             // Used to manage users and their actions
-let activeuser = {};                    // A single identified user
+let activeuser = theusers.searchUser(); // A single identified user
 let formstatus = {                      // Used to manage the resa button status
     firstname: false,
     lastname: false,
@@ -117,7 +117,7 @@ window.addEventListener('message', (event) => {
             remainplaces.innerText = ""; 
             remainbikes.innerText = "";
             formstatus.bikesavailable = false;
-            BookDebookBike();
+            if(activeuser.found) BookDebookBike();
             resabutton.disabled = checkallinputs();
             resastation.innerText = resaclient.innerText =  resatime.innerText = "";
             break;        
@@ -153,7 +153,6 @@ function cardidinput() {
         formstatus.lastname = formstatus.firstname = false;
     }
     resabutton.disabled = checkallinputs();
-    console.log(activeuser);
 }
 // User input handlers
 function lastnameinput() {
@@ -187,27 +186,32 @@ function manageUserObject() {
 // 1 / Bikes are available
 // 2 - User lname and fname are both ok
 function BookDebookBike() {
-    if(!activeuser.activeresa) { 
-        thecity.BookBike();           // Book
-        resabutton.innerText = "Libérer";
-        activeuser.activeresa = true;
-        activeuser.reservation = {
-            "station": thecity.getSelectedStation(),    
-            "resatime": getDateTime()
-        };
-        resastation.innerText = activeuser.reservation.station.name;
-        resaclient.innerText = activeuser.fname +  activeuser.lname;
-        resatime.innerText = activeuser.reservation.resatime;
-        remainbikes.innerText = activeuser.reservation.station.available_bikes;
+    if(activeuser.activeresa) { 
+        // Debook and then rebook. The user clicked the resa button but already have 
+        // a reserved bikeSo free the previously reserved bike and book the new one.
+        // It can be in the same station or another one. 
+        remainbikes.innerText = activeuser.reservation.station.available_bikes + 1;
+        thecity.DebookBike(activeuser.reservation.station);
+        thecity.BookBike();
+        bookUpdate();
     }
     else {
-        remainbikes.innerText = activeuser.reservation.station.available_bikes + 1;
-        thecity.DebookBike(activeuser.reservation.station);         // Debook
-        resabutton.innerText = "Réserver";
-        activeuser.activeresa = false;
-        activeuser.reservation = {  };
-        resastation.innerText = resaclient.innerText =  resatime.innerText = "";
+        // Book. 1st resa by user, normal situation
+        thecity.BookBike();
+        bookUpdate();
     }
+}
+// Jsut to share code in BookDebbokBibe()
+function bookUpdate() {
+    activeuser.activeresa = true;
+    activeuser.reservation = {
+        "station": thecity.getSelectedStation(),    
+        "resatime": getDateTime()
+    };
+    resastation.innerText = activeuser.reservation.station.name;
+    resaclient.innerText = activeuser.fname +  activeuser.lname;
+    resatime.innerText = activeuser.reservation.resatime;
+    remainbikes.innerText = activeuser.reservation.station.available_bikes;
 }
 
 // For the image slider
@@ -237,7 +241,6 @@ function changeSlide(sens) {
 }
 // Choose a city in the list box
 function switchCity() {
-    log('Switching to ' + cityselect.value);
     thecity.setPosition(cityselect.value);
     formstatus.bikesavailable = false;
     resabutton.disabled = checkallinputs;
