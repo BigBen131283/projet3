@@ -13,13 +13,14 @@
                 Reorg display action so that they all take place in script.js
     Mar 18 2022 Book / debook 
     Mar 20 2022 Book / debook, change screen mockup
+    Mar 31 2022 Fix the null problem in reservation window when changing city
 
 */
 import city from './classes/city.js'
 import users from './classes/users.js';
 import { getDateTime, getDate, getTime } from './utilities/datetime.js'
 
-const version = "script.js 1.52 Mar 20 2022 : "
+const version = "script.js 1.53 Mar 31 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -58,6 +59,7 @@ let mobile = document.getElementById("mobile");
 let resastation = document.getElementById("resastation");
 let resaclient = document.getElementById("resauser");
 let resatime = document.getElementById("resatime");
+let resarea = document.getElementsByClassName("gridresa");
 let resatimer = document.getElementById("timer");
 // Add necessary event handlers
 boutonPause.addEventListener('click', togglePause);
@@ -73,7 +75,6 @@ firstname.addEventListener('keyup', () => delay(firstnameinput));
 // Reservation button monitor
 resabutton.addEventListener('click', () => BookDebookBike());
 resabutton.disabled = checkallinputs;
-
 // Load the list box with supported cities
 for(let i = 0; i < allcities.length; i++) {
     let option = document.createElement('option');
@@ -198,8 +199,10 @@ function BookDebookBike() {
         resastation.innerText = activeuser.reservation.station.name;
         resaclient.innerText = activeuser.fname +  activeuser.lname;
         resatime.innerText = activeuser.reservation.resatime;
+        remainbikes.innerText = activeuser.reservation.station.available_bikes;
     }
     else {
+        remainbikes.innerText = activeuser.reservation.station.available_bikes + 1;
         thecity.DebookBike(activeuser.reservation.station);         // Debook
         resabutton.innerText = "Réserver";
         activeuser.activeresa = false;
