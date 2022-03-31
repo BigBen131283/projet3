@@ -154,7 +154,6 @@ export default class map {
   BookBike() {
     this.selectedstation.available_bikes--;
     this.thestations.updateOneStation(this.selectedstation);
-    console.log(this.thestations.getOneStation(this.selectedstation.number));
     this.markergroup.clearLayers();
     this.displayStations();
     window.postMessage({origin: 'MAPJS-BOOK', stationobject: this.selectedstation} ); 

@@ -59,7 +59,6 @@ let mobile = document.getElementById("mobile");
 let resastation = document.getElementById("resastation");
 let resaclient = document.getElementById("resauser");
 let resatime = document.getElementById("resatime");
-let resarea = document.getElementsByClassName("gridresa");
 let resatimer = document.getElementById("timer");
 // Add necessary event handlers
 boutonPause.addEventListener('click', togglePause);
@@ -120,6 +119,7 @@ window.addEventListener('message', (event) => {
             formstatus.bikesavailable = false;
             BookDebookBike();
             resabutton.disabled = checkallinputs();
+            resastation.innerText = resaclient.innerText =  resatime.innerText = "";
             break;        
     }           
 });
@@ -181,7 +181,6 @@ function manageUserObject() {
         activeuser.lname = lastname.value;
         activeuser.found = true;
     }
-    console.log(activeuser);
 }
 // Resa  handler
 // It is assumed that when coming here all controls are done
