@@ -7,7 +7,7 @@
 
 export default class sign {
 
-    version = "sign.js 1.04, Apr 01 2022 : "
+    version = "sign.js 1.05, Apr 01 2022 : "
 
     constructor() {
         this.signparent = document.getElementById("sign");
@@ -29,8 +29,12 @@ export default class sign {
         canvasArea.setAttribute("id", "newSignature");
         let para = document.createElement("p");
         para.innerText = "Signature";
+        let clearbutton = document.createElement("button");
+        clearbutton.innerText = "Clear";
+        clearbutton.addEventListener('click', this.clear);
         this.signparent.appendChild(para);
         this.signparent.appendChild(canvasArea);
+        this.signparent.appendChild(clearbutton);
 
         this.canvas = document.getElementById("newSignature");
         this.context = this.canvas.getContext("2d");
@@ -60,8 +64,10 @@ export default class sign {
         this.canvas.addEventListener('touchstart', this.on_mousedown, false);
 
     }
-    // The handler function is declared like that to get an access to this
+    // ------------------------------------------------------------------------
+    // Handler functions are declared like that to get an access to this
     // pointing on the class instance
+    // ------------------------------------------------------------------------
     on_mousedown = e => {
         e.preventDefault();
         e.stopPropagation();
@@ -115,6 +121,13 @@ export default class sign {
         this.calculate = false;
     }
 
+    // ------------------------------------------------------------------------
+    // Utilities
+    // ------------------------------------------------------------------------
+    clear = () => {
+        this.signparent.removeChild(this.canvas);
+        this.#setFramework();
+    }    
     get_board_coords(e) {
         let x, y;
 
@@ -145,7 +158,8 @@ export default class sign {
 
         document.body.removeEventListener('mouseup', this.on_mouseup, false);
         document.body.removeEventListener('touchend', this.on_mouseup, false);
-    }    // ----------------------------------------------- 
+    }    
+    // ----------------------------------------------- 
     log(message) {
         console.log(this.version + message);
     }

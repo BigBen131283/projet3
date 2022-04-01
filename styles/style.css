@@ -38,7 +38,12 @@ h1, h4
 }
 .sign p {
     position: absolute;
-    right: 140px;
+    right: 200px;
+    top: -210px;
+}
+.sign button {
+    position: absolute;
+    right: 40px;
     top: -210px;
 }
 canvas { 
