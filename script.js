@@ -16,13 +16,15 @@
     Mar 31 2022 Fix the null problem in reservation window when changing city
     Apr 01 2022 Memorize name of user when a reservation is done, and get it back 
                 when the browser is reopened
+                Start work on canvas signature
 
 */
 import city from './classes/city.js'
 import users from './classes/users.js';
+import sign from './classes/sign.js';
 import { getDateTime, getDate, getTime } from './utilities/datetime.js'
 
-const version = "script.js 1.60, Apr 01 2022 : "
+const version = "script.js 1.61, Apr 01 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -31,10 +33,14 @@ const slide = ["/images/image1.jpg", "/images/image2.jpg", "/images/image3.jpg"]
 let persistentstorage = localStorage;
 let numero = 0;
 let isPaused = false
+// Get some objects and activate them
 let thecity = new city();
 let allcities =thecity.getCities();     // Get managed cities list
 let theusers = new users();             // Used to manage users and their actions
 let activeuser = theusers.searchUser(); // A single identified user
+let signature = new sign();
+
+
 let formstatus = {                      // Used to manage the resa button status
     firstname: false,
     lastname: false,
