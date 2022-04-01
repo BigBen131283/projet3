@@ -14,18 +14,21 @@
     Mar 18 2022 Book / debook 
     Mar 20 2022 Book / debook, change screen mockup
     Mar 31 2022 Fix the null problem in reservation window when changing city
+    Apr 01 2022 Memorize name of user when a reservation is done, and get it back 
+                when the browser is reopened
 
 */
 import city from './classes/city.js'
 import users from './classes/users.js';
 import { getDateTime, getDate, getTime } from './utilities/datetime.js'
 
-const version = "script.js 1.59 Mar 31 2022 : "
+const version = "script.js 1.60, Apr 01 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
 // -----------------------------------------------------------------
 const slide = ["/images/image1.jpg", "/images/image2.jpg", "/images/image3.jpg"];
+let persistentstorage = localStorage;
 let numero = 0;
 let isPaused = false
 let thecity = new city();
@@ -85,6 +88,18 @@ for(let i = 0; i < allcities.length; i++) {
 }
 // For the automatic slider movement
 setInterval(autoDefil, 5000);
+// Check any previous user session in local storage
+let usersessionlname = persistentstorage.getItem("userlname");
+let usersessionfname = persistentstorage.getItem("userfname");
+if (usersessionfname) {
+    lastname.value = usersessionlname;
+    firstname.value = usersessionfname;
+    let keepmysession = confirm(`Hello ${usersessionfname}, want to get your previous session ? `);
+    if(!keepmysession) {
+        persistentstorage.clear();
+        lastname.value = firstname.value = '';
+    }
+}
 
 // ---------------------------------------------------------------------------------
 //     M A I N   P A G E  E V E N T   H A N D L E R   F O R   D I S P L A Y
@@ -207,6 +222,8 @@ function BookDebookBike(action) {
             }
             resasessiontimeremaining = resaexpirationdelay;
             resatimer = setInterval(resaExpirationCheck, 1000);
+            persistentstorage.setItem('userfname', activeuser.fname);
+            persistentstorage.setItem('userlname', activeuser.lname);
             break;
         case 'citychange':
             if(activeuser.activeresa) {
