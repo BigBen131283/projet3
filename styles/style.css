@@ -30,7 +30,25 @@ h1, h4
     justify-content: center;
     align-items: center;
 }
-
+/* 
+    Signature 
+*/
+.sign {
+    position: relative;
+}
+.sign p {
+    position: absolute;
+    right: 140px;
+    top: -210px;
+}
+canvas { 
+    border: 1px solid black;
+    position: absolute;
+    right: 20px;
+    top: -170px;
+    width: "200px"; 
+    height: "100px";
+}
 
 /*booking section*/
 
