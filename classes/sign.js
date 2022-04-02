@@ -13,12 +13,9 @@ export default class sign {
         this.signparent = document.getElementById("sign");
         this.canvas;            // Signature zone
         this.context;           // The canvas context. Accessed by multiple handlers
-        this.disableSave = true;
         this.pixels = [];
-        this.cpixels = [];
         this.xyLast = {};
         this.xyAddLast = {};
-        this.calculate = false;
 
         this.#setFramework();
     }
@@ -82,7 +79,7 @@ export default class sign {
 
         // Get the points where the mouse click occurred
         let xy = this.get_board_coords(e);
-        this.context.beginPath();
+    this.context.beginPath();                   // Create a new path
         this.pixels.push('moveStart');
         this.context.moveTo(xy.x, xy.y);
         this.pixels.push(xy.x, xy.y);
@@ -99,18 +96,14 @@ export default class sign {
             y : (this.xyLast.y + xy.y) / 2
         };
 
-        if (this.calculate) {
-            let xLast = (this.xyAddLast.x + this.xyLast.x + xyAdd.x) / 3;
-            let yLast = (this.xyAddLast.y + this.xyLast.y + xyAdd.y) / 3;
-            this.pixels.push(xLast, yLast);
-        } else {
-            this.calculate = true;
-        }
+        let xLast = (this.xyAddLast.x + this.xyLast.x + xyAdd.x) / 3;
+        let yLast = (this.xyAddLast.y + this.xyLast.y + xyAdd.y) / 3;
+        this.pixels.push(xLast, yLast);
 
         this.context.quadraticCurveTo(this.xyLast.x, this.xyLast.y, xyAdd.x, xyAdd.y);
         this.pixels.push(xyAdd.x, xyAdd.y);
-        this.context.stroke();
-        this.context.beginPath();
+        this.context.stroke();                  // Draw some points
+        this.context.beginPath();               // Begin a new path
         this.context.moveTo(xyAdd.x, xyAdd.y);
         this.xyAddLast = xyAdd;
         this.xyLast = xy;
@@ -119,10 +112,8 @@ export default class sign {
     // ------------------------------------------------------------------------
     on_mouseup = e => {
         this.remove_event_listeners();
-        this.disableSave = false;
-        this.context.stroke();
+        this.context.stroke();                  // Draw last points
         this.pixels.push('e');
-        this.calculate = false;
     }
 
     // ------------------------------------------------------------------------
