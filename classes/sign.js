@@ -59,7 +59,7 @@ export default class sign {
         this.context.stroke();
         this.context.fillStyle = "#fff";
         this.context.strokeStyle = "#444";
-
+        // Register starting events
         this.canvas.addEventListener('mousedown', this.on_mousedown, false);
         this.canvas.addEventListener('touchstart', this.on_mousedown, false);
 
@@ -69,8 +69,9 @@ export default class sign {
     // pointing on the class instance
     // ------------------------------------------------------------------------
     on_mousedown = e => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault();     // Disable default action
+        e.stopPropagation();    // Do not propagate the event
+                                // Register movement events
         this.canvas.addEventListener('mousemove', this.on_mousemove, false);
         this.canvas.addEventListener('mouseup', this.on_mouseup, false);
         this.canvas.addEventListener('touchmove', this.on_mousemove, false);
@@ -79,6 +80,7 @@ export default class sign {
         document.body.addEventListener('mouseup', this.on_mouseup, false);
         document.body.addEventListener('touchend', this.on_mouseup, false);
 
+        // Get the points where the mouse click occurred
         let xy = this.get_board_coords(e);
         this.context.beginPath();
         this.pixels.push('moveStart');
@@ -86,6 +88,7 @@ export default class sign {
         this.pixels.push(xy.x, xy.y);
         this.xyLast = xy;
     }
+    // ------------------------------------------------------------------------
     on_mousemove = e => {
         e.preventDefault();
         e.stopPropagation();
@@ -113,6 +116,7 @@ export default class sign {
         this.xyLast = xy;
 
     }
+    // ------------------------------------------------------------------------
     on_mouseup = e => {
         this.remove_event_listeners();
         this.disableSave = false;
@@ -127,7 +131,10 @@ export default class sign {
     clear = () => {
         this.signparent.removeChild(this.canvas);
         this.#setFramework();
-    }    
+    }
+    // ------------------------------------------------------------------------
+    // Track mouse coordinates for start move end events    
+    // ------------------------------------------------------------------------
     get_board_coords(e) {
         let x, y;
 
@@ -150,6 +157,7 @@ export default class sign {
             y : y
         };
     }
+    // ------------------------------------------------------------------------
     remove_event_listeners() {
         this.canvas.removeEventListener('mousemove', this.on_mousemove, false);
         this.canvas.removeEventListener('mouseup', this.on_mouseup, false);
