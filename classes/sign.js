@@ -3,20 +3,20 @@
 
     Apr 01 2022   Initial
     Apr 02 2022   Cleanup unused vars. And maybe some strange code
+    Apr 03 2022   Bring back pixels array. Could be useful to compute some signature characteristics
 
 */
 
 export default class sign {
 
-    version = "sign.js 1.07, Apr 02 2022 : "
+    version = "sign.js 1.09, Apr 03 2022 : "
 
     constructor() {
         this.signparent = document.getElementById("sign");
         this.canvas;            // Signature zone
         this.context;           // The canvas context. Accessed by multiple handlers
-        //this.pixels = [];
+        this.pixels = [];
         this.xyLast = {};
-        //this.xyAddLast = {};
 
         this.#setFramework();
     }
@@ -57,6 +57,8 @@ export default class sign {
         this.context.stroke();
         this.context.fillStyle = "#fff";
         this.context.strokeStyle = "#444";
+        // Clear the points array in case it's already been used
+        this.pixels = [];
         // Register starting events
         this.canvas.addEventListener('mousedown', this.on_mousedown, false);
         this.canvas.addEventListener('touchstart', this.on_mousedown, false);
@@ -81,9 +83,9 @@ export default class sign {
         // Get the points where the mouse click occurred
         let xy = this.get_board_coords(e);
         this.context.beginPath();                   // Create a new path
-        //this.pixels.push('moveStart');
+        this.pixels.push('moveStart');
         this.context.moveTo(xy.x, xy.y);
-        //this.pixels.push(xy.x, xy.y);
+        this.pixels.push(xy.x, xy.y);
         this.xyLast = xy;
     }
     // ------------------------------------------------------------------------
@@ -98,17 +100,11 @@ export default class sign {
             y : (this.xyLast.y + xy.y) / 2
         };
 
-        //let xLast = (this.xyAddLast.x + this.xyLast.x + xyAdd.x) / 3;
-        //let yLast = (this.xyAddLast.y + this.xyLast.y + xyAdd.y) / 3;
-        //this.pixels.push(xLast, yLast);
-
-        //this.context.quadraticCurveTo(this.xyLast.x, this.xyLast.y, xy.x, xy.y);
         this.context.quadraticCurveTo(this.xyLast.x, this.xyLast.y, xyAdd.x, xyAdd.y);
-        //this.pixels.push(xyAdd.x, xyAdd.y);
+        this.pixels.push(xyAdd.x, xyAdd.y);
         this.context.stroke();                  // Draw some points
         this.context.beginPath();               // Begin a new path
-        this.context.moveTo(xyAdd.x, xyAdd.y);
-        //this.xyAddLast = xyAdd;
+        this.context.moveTo(xyAdd.x, xyAdd.y);  // Prepare nex draw
         this.xyLast = xy;
 
     }
@@ -116,7 +112,8 @@ export default class sign {
     on_mouseup = e => {
         this.remove_event_listeners();
         this.context.stroke();                  // Draw last points
-        //this.pixels.push('e');
+        this.pixels.push('e');
+        this.log(`collected ${this.pixels.length} signature points`);
     }
 
     // ------------------------------------------------------------------------
