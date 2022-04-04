@@ -53,6 +53,8 @@ export default class sign {
         this.context.moveTo((this.canvas.width * 0.05), (this.canvas.height * 0.9));
         this.context.lineTo((this.canvas.width * 0.95), (this.canvas.height * 0.9));
         this.context.stroke();              // Draw the prepared shape
+        //  Test quadratic
+        this.testBezierCurve();
         // Clear the points array in case it's already been used
         this.pixels = [];
         // Register starting events, either with the mouse or with a finger touch
@@ -87,13 +89,13 @@ export default class sign {
         e.stopPropagation();
 
         let xy = this.get_board_coords(e);
-        // Reduce the distance between drawn points
-        // Guess this is to get a finer drawing on the area
+        // Prepare to draw a Bézier curve
+        // 1st compute the end point coordinates of the curve
         let xyAdd = {
             x : (this.xyLast.x + xy.x) / 2,
             y : (this.xyLast.y + xy.y) / 2
         };
-        // Bezier curve added to the current subpath
+        // Bezier curve added to the current subpath and then drawn
         this.context.quadraticCurveTo(this.xyLast.x, this.xyLast.y, xyAdd.x, xyAdd.y);
         this.pixels.push(xyAdd.x, xyAdd.y);     // Store points for optional later use
         this.context.stroke();                  // Draw the curve
@@ -152,7 +154,19 @@ export default class sign {
 
         document.body.removeEventListener('mouseup', this.on_mouseup, false);
         document.body.removeEventListener('touchend', this.on_mouseup, false);
-    }    
+    }
+    // ----------------------------------------------- 
+    // Look at https://www.youtube.com/watch?v=Ccxd6qzqFms for Bézier curves
+    // and also https://www.imo.universite-paris-saclay.fr/~perrin/CAPES/geometrie/BezierDP.pdf
+    // ----------------------------------------------- 
+    testBezierCurve() {
+        //  Test quadratic
+        this.context.beginPath();
+        this.context.moveTo(60, 20);
+                    // ( controlpointX, controlpointY, endpointX, endpointY )
+        this.context.quadraticCurveTo(300, 60, 60, 100);
+        this.context.stroke();
+    }
     // ----------------------------------------------- 
     log(message) {
         console.log(this.version + message);
