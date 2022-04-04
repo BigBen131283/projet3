@@ -4,12 +4,13 @@
     Apr 01 2022   Initial
     Apr 02 2022   Cleanup unused vars. And maybe some strange code
     Apr 03 2022   Bring back pixels array. Could be useful to compute some signature characteristics
+    Apr 04 2022   Continue CANVAS code analysis
 
 */
 
 export default class sign {
 
-    version = "sign.js 1.09, Apr 03 2022 : "
+    version = "sign.js 1.10, Apr 04 2022 : "
 
     constructor() {
         this.signparent = document.getElementById("sign");
@@ -23,6 +24,7 @@ export default class sign {
 
     // Dynamically build the interface
     #setFramework() {
+        // HTML setup
         let canvasArea = document.createElement("canvas");
         canvasArea.setAttribute("id", "newSignature");
         let para = document.createElement("p");
@@ -33,33 +35,27 @@ export default class sign {
         this.signparent.appendChild(para);
         this.signparent.appendChild(canvasArea);
         this.signparent.appendChild(clearbutton);
-
         this.canvas = document.getElementById("newSignature");
-        this.context = this.canvas.getContext("2d");
+        this.canvas.width = "300";      // Sign area size, check it in style.css
+        this.canvas.height = "200";
+        // CANVAS setup
+        this.context = this.canvas.getContext("2d");                // Work 2D
         if (!this.context) {
-            throw new Error("Failed to get canvas' 2d context");
+            throw new Error("Failed to get canvas' 2d context");    // Lack of browser support
         }
-        this.context.fillStyle = "#fff";
-        this.context.strokeStyle = "#444";
-        this.context.lineWidth = 1.2;
-        this.context.lineCap = "round";
-
-        this.context.fillStyle = "#fff";
-        this.context.strokeStyle = "#444";
-        this.context.lineWidth = 1.2;
-        this.context.lineCap = "round";
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.fillStyle = "#3a87ad";
-        this.context.strokeStyle = "#3a87ad";
-        this.context.lineWidth = 1;
-        this.context.moveTo((this.canvas.width * 0.042), (this.canvas.height * 0.7));
-        this.context.lineTo((this.canvas.width * 0.958), (this.canvas.height * 0.7));
-        this.context.stroke();
-        this.context.fillStyle = "#fff";
-        this.context.strokeStyle = "#444";
+        // Fill background
+        this.context.fillStyle = "cyan";                                        // cyan background
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);     // Fill area
+        // Draw a line at the bottom of the sign area
+        this.context.strokeStyle = "blue";                                  
+        this.context.lineCap = "round";     // End of the line will be surrounded
+        this.context.lineWidth = 1;         // Pen width
+        this.context.moveTo((this.canvas.width * 0.05), (this.canvas.height * 0.9));
+        this.context.lineTo((this.canvas.width * 0.95), (this.canvas.height * 0.9));
+        this.context.stroke();              // Draw the prepared shape
         // Clear the points array in case it's already been used
         this.pixels = [];
-        // Register starting events
+        // Register starting events, either with the mouse or with a finger touch
         this.canvas.addEventListener('mousedown', this.on_mousedown, false);
         this.canvas.addEventListener('touchstart', this.on_mousedown, false);
 
@@ -77,16 +73,13 @@ export default class sign {
         this.canvas.addEventListener('touchmove', this.on_mousemove, false);
         this.canvas.addEventListener('touchend', this.on_mouseup, false);
 
-        document.body.addEventListener('mouseup', this.on_mouseup, false);
-        document.body.addEventListener('touchend', this.on_mouseup, false);
-
         // Get the points where the mouse click occurred
         let xy = this.get_board_coords(e);
-        this.context.beginPath();                   // Create a new path
-        this.pixels.push('moveStart');
+        this.context.beginPath();           // Create a new path
+        this.pixels.push('moveStart');      // Store a begin sign marker
         this.context.moveTo(xy.x, xy.y);
-        this.pixels.push(xy.x, xy.y);
-        this.xyLast = xy;
+        this.pixels.push(xy.x, xy.y);       // Store points for optional later use
+        this.xyLast = xy;                   // Memorize the current points into the latest known position
     }
     // ------------------------------------------------------------------------
     on_mousemove = e => {
@@ -95,27 +88,29 @@ export default class sign {
 
         let xy = this.get_board_coords(e);
         // Reduce the distance between drawn points
+        // Guess this is to get a finer drawing on the area
         let xyAdd = {
             x : (this.xyLast.x + xy.x) / 2,
             y : (this.xyLast.y + xy.y) / 2
         };
-
+        // Bezier curve added to the current subpath
         this.context.quadraticCurveTo(this.xyLast.x, this.xyLast.y, xyAdd.x, xyAdd.y);
-        this.pixels.push(xyAdd.x, xyAdd.y);
-        this.context.stroke();                  // Draw some points
-        this.context.beginPath();               // Begin a new path
-        this.context.moveTo(xyAdd.x, xyAdd.y);  // Prepare nex draw
-        this.xyLast = xy;
+        this.pixels.push(xyAdd.x, xyAdd.y);     // Store points for optional later use
+        this.context.stroke();                  // Draw the curve
+                                                // Then we reset the path to draw the next section of the curve
+        this.context.beginPath();               
+        this.context.moveTo(xyAdd.x, xyAdd.y);  // Prepare next draw by moving our pen to the current position
+        this.xyLast = xy;                       // Memorize the current points into the latest known position
 
     }
     // ------------------------------------------------------------------------
     on_mouseup = e => {
         this.remove_event_listeners();
-        this.context.stroke();                  // Draw last points
-        this.pixels.push('e');
+        this.context.stroke();                  // Draw final points
+        this.pixels.push('moveEnd');                  // Mark the end of our signature section
+                                                // Most probably the user will draw new curves
         this.log(`collected ${this.pixels.length} signature points`);
     }
-
     // ------------------------------------------------------------------------
     // Utilities
     // ------------------------------------------------------------------------
