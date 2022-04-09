@@ -117,7 +117,7 @@ export default class sign {
     // Utilities
     // ------------------------------------------------------------------------
     clear = () => {
-        this.signparent.removeChild(this.canvas);
+        this.signparent.innerHTML = '';
         this.#setFramework();
     }
     // ------------------------------------------------------------------------
