@@ -5,12 +5,13 @@
     Apr 02 2022   Cleanup unused vars. And maybe some strange code
     Apr 03 2022   Bring back pixels array. Could be useful to compute some signature characteristics
     Apr 04 2022   Continue CANVAS code analysis
+    Apr 10 2022   User interface
 
 */
 
 export default class sign {
 
-    version = "sign.js 1.10, Apr 04 2022 : "
+    version = "sign.js 1.14, Apr 10 2022 : "
 
     constructor() {
         this.signparent = document.getElementById("sign");
@@ -27,24 +28,17 @@ export default class sign {
         // HTML setup
         let canvasArea = document.createElement("canvas");
         canvasArea.setAttribute("id", "newSignature");
-        let para = document.createElement("p");
-        para.innerText = "Signature";
-        let clearbutton = document.createElement("button");
-        clearbutton.innerText = "Clear";
-        clearbutton.addEventListener('click', this.clear);
-        this.signparent.appendChild(para);
         this.signparent.appendChild(canvasArea);
-        this.signparent.appendChild(clearbutton);
         this.canvas = document.getElementById("newSignature");
-        this.canvas.width = "300";      // Sign area size, check it in style.css
-        this.canvas.height = "200";
+        this.canvas.height = "100";
+        this.canvas.width = this.signparent.offsetWidth * 0.95;
         // CANVAS setup
         this.context = this.canvas.getContext("2d");                // Work 2D
         if (!this.context) {
             throw new Error("Failed to get canvas' 2d context");    // Lack of browser support
         }
         // Fill background
-        this.context.fillStyle = "cyan";                                        // cyan background
+        this.context.fillStyle = "darkcyan";                                        // cyan background
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);     // Fill area
         // Draw a line at the bottom of the sign area
         this.context.strokeStyle = "blue";                                  
@@ -53,14 +47,14 @@ export default class sign {
         this.context.moveTo((this.canvas.width * 0.05), (this.canvas.height * 0.9));
         this.context.lineTo((this.canvas.width * 0.95), (this.canvas.height * 0.9));
         this.context.stroke();              // Draw the prepared shape
-        //  Test quadratic
-        this.testBezierCurve();
+        // Test quadratic
+        // this.testBezierCurve();
         // Clear the points array in case it's already been used
         this.pixels = [];
         // Register starting events, either with the mouse or with a finger touch
         this.canvas.addEventListener('mousedown', this.on_mousedown, false);
         this.canvas.addEventListener('touchstart', this.on_mousedown, false);
-
+        window.postMessage({origin: 'SIGNATURE-CLEARED', pixels: this.pixels.length } ); 
     }
     // ------------------------------------------------------------------------
     // Handler functions are declared like that to get an access to this
@@ -112,37 +106,32 @@ export default class sign {
         this.pixels.push('moveEnd');                  // Mark the end of our signature section
                                                 // Most probably the user will draw new curves
         this.log(`collected ${this.pixels.length} signature points`);
+        window.postMessage({origin: 'SIGNATURE-CHANGED', pixels: this.pixels.length } ); 
+
     }
     // ------------------------------------------------------------------------
     // Utilities
     // ------------------------------------------------------------------------
-    clear = () => {
+    clearSignature = () => {
         this.signparent.innerHTML = '';
         this.#setFramework();
+    }
+    // ------------------------------------------------------------------------
+    resetSignArea() {
+        this.clearSignature();
+    }
+    // ------------------------------------------------------------------------
+    getSignatureStatus() {
+        return this.pixels.length === 0 ? false : true;
     }
     // ------------------------------------------------------------------------
     // Track mouse coordinates for start move end events    
     // ------------------------------------------------------------------------
     get_board_coords(e) {
-        let x, y;
-
-        if (e.changedTouches && e.changedTouches[0]) {
-            var offsety = canvas.offsetTop || 0;
-            var offsetx = canvas.offsetLeft || 0;
-
-            x = e.changedTouches[0].pageX - offsetx;
-            y = e.changedTouches[0].pageY - offsety;
-        } else if (e.layerX || 0 == e.layerX) {
-            x = e.layerX;
-            y = e.layerY;
-        } else if (e.offsetX || 0 == e.offsetX) {
-            x = e.offsetX;
-            y = e.offsetY;
-        }
-
+        // console.log(`X = ${e.offsetX} Y = ${e.offsetY}`)
         return {
-            x : x,
-            y : y
+            x : e.offsetX,
+            y : e.offsetY
         };
     }
     // ------------------------------------------------------------------------

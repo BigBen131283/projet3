@@ -24,15 +24,16 @@
                     <i class="fa-solid fa-forward-step" id="next"></i>
                 </div>
             </div>
-            <!-- The Canvas signing area. Look into sign.js -->
-            <div class="sign" id="sign">
-            </div>
         </div>
         <div class="booking">
             <div class="partone">
                 <div id="map" class="map"></div>
                 <div class="detail">
                     <h2>Détail de la station</h2>
+                    <div class="buttoncontrols">
+                        <button id="clearbutton">Clear Signature</button>
+                        <button id="clearid">Clear ID</button>
+                    </div>
                     <div class="gridstation">
                         <div class="cityselectL"><p>Ville : </p></div>
                         <div class="cityselectD"><select name="cityselection" id="cityselect"></select></div>
@@ -68,6 +69,8 @@
                         <div class="gresaexptimeL"><p>Temps restant : </p></div>
                         <div class="gresaexptimeD"><span id="resaexp"></span></div>
                     </div>
+                    <!-- The Canvas signing area. Look into sign.js -->
+                    <div class="sign" id="sign"></div>
                 </div>
             </div>
         </div>

@@ -17,6 +17,7 @@
     Apr 01 2022 Memorize name of user when a reservation is done, and get it back 
                 when the browser is reopened
                 Start work on canvas signature
+    Apr 10 2022 Clear button handling
 
 */
 import city from './classes/city.js'
@@ -24,7 +25,7 @@ import users from './classes/users.js';
 import sign from './classes/sign.js';
 import { getDateTime, getDate, getTime } from './utilities/datetime.js'
 
-const version = "script.js 1.61, Apr 01 2022 : "
+const version = "script.js 1.65, Apr 10 2022 : "
 
 // -----------------------------------------------------------------
 // Initialization
@@ -49,7 +50,8 @@ let formstatus = {                      // Used to manage the resa button status
 let checkallinputs = () => { console.log(formstatus);
                             return ! (formstatus.firstname 
                                 && formstatus.lastname 
-                                && formstatus.bikesavailable); 
+                                && formstatus.bikesavailable
+                                && signature.getSignatureStatus()); 
                         }
 
 // Retrieve usefull DOM elements handlers
@@ -69,7 +71,10 @@ let resastation = document.getElementById("resastation");
 let resaclient = document.getElementById("resauser");
 let resatime = document.getElementById("resatime");
 let resaexptime = document.getElementById("resaexp");
-let resaexpirationdelay = 10; // Seconds
+let clearbutton = document.getElementById("clearbutton");
+let clearid = document.getElementById("clearid");
+
+let resaexpirationdelay = 1200; // Seconds
 let resasessiontimeremaining;
 let resatimer = document.getElementById("timer");
 // Add necessary event handlers
@@ -77,7 +82,7 @@ boutonPause.addEventListener('click', togglePause);
 document.getElementById("previous").addEventListener('click', () => changeSlide(-1));
 document.getElementById("next").addEventListener('click', () => changeSlide(1));
 // Change city listener
-cityselect.addEventListener('change', () => switchCity());       
+cityselect.addEventListener('change', () => switchCity());
 // Manage card ID input
 cardid.addEventListener('keyup', () => delay(cardidinput));
 // Manage user name and password inputs
@@ -86,6 +91,13 @@ firstname.addEventListener('keyup', () => delay(firstnameinput));
 // Reservation button monitor
 resabutton.addEventListener('click', () => BookDebookBike('userclick'));
 resabutton.disabled = checkallinputs;
+// Signature reset button
+clearbutton.addEventListener('click', clearSignature);
+// ID reset button
+clearid.addEventListener('click', clearID);
+window.addEventListener("resize", resizeSignArea);
+
+
 // Load the list box with supported cities
 for(let i = 0; i < allcities.length; i++) {
     let option = document.createElement('option');
@@ -100,11 +112,13 @@ let usersessionfname = persistentstorage.getItem("userfname");
 if (usersessionfname) {
     lastname.value = usersessionlname;
     firstname.value = usersessionfname;
+    formstatus.firstname = formstatus.lastname = true;
     let keepmysession = confirm(`Hello ${usersessionfname}, want to get your previous session ? `);
     if(!keepmysession) {
         persistentstorage.clear();
         lastname.value = firstname.value = '';
     }
+    resabutton.disabled = checkallinputs();
 }
 
 // ---------------------------------------------------------------------------------
@@ -141,10 +155,18 @@ window.addEventListener('message', (event) => {
             remainplaces.innerText = ""; 
             remainbikes.innerText = "";
             formstatus.bikesavailable = false;
-            if(activeuser.found) BookDebookBike('citychange');
+            if(activeuser.found) BookDebookBike('timer');
             resabutton.disabled = checkallinputs();
             resastation.innerText = resaclient.innerText =  resatime.innerText = "";
-            break;        
+            break;    
+        case 'SIGNATURE-CLEARED':
+            log(`Signature cleared`);
+            resabutton.disabled = checkallinputs();
+            break;
+        case 'SIGNATURE-CHANGED':
+            log(`Signature updated, now contains ${event.data.pixels} pixels`);
+            resabutton.disabled = checkallinputs();
+            break;
     }           
 });
 // -----------------------------------------------------------------
@@ -191,6 +213,14 @@ function firstnameinput() {
         { formstatus.firstname  = false; }
     else { formstatus.firstname = true;}
     manageUserObject();
+    resabutton.disabled = checkallinputs();
+}
+// ----------------------------------------------- 
+function clearID() {
+    lastname.value = firstname.value = cardid.value = 
+                mobile.value = mail.value = ''
+    formstatus.lastname = formstatus.lastname = false;
+    if(activeuser.found) BookDebookBike('timer');
     resabutton.disabled = checkallinputs();
 }
 // Have to create, delete or modify user object 
@@ -306,12 +336,19 @@ function switchCity() {
 function resaExpirationCheck() {
     resasessiontimeremaining--;
     resaexptime.innerText = secondsToString(resasessiontimeremaining);
-    log(resasessiontimeremaining)
     if( resasessiontimeremaining === 0) {
         resaexptime.innerText = '';
         clearInterval(resatimer);
         BookDebookBike('timer');
     }
+}
+// ----------------------------------------------- 
+function clearSignature() {
+    signature.clearSignature();
+}
+// ----------------------------------------------- 
+function resizeSignArea() {
+    signature.resetSignArea();
 }
 // ----------------------------------------------- 
 function secondsToString(seconds) {

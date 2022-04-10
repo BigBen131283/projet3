@@ -11,9 +11,9 @@ h1, h4
     display: flex;
     justify-content: center;
 }
-
-/*slider section*/
-
+/* ----------------------------------------------------------
+    slider section 
+---------------------------------------------------------- */
 .nav
 {
     display: flex;
@@ -30,33 +30,35 @@ h1, h4
     justify-content: center;
     align-items: center;
 }
-/* 
+/* ----------------------------------------------------------
     Signature 
-*/
-.sign {
-    position: relative;
-}
-.sign p {
-    position: absolute;
-    right: 200px;
-    top: -210px;
-}
-.sign button {
-    position: absolute;
-    right: 40px;
-    top: -210px;
-}
+---------------------------------------------------------- */
 canvas { 
     border: 1px solid black;
-    position: absolute;
-    right: 20px;
-    top: -220px;
-    width: "300px"; 
-    height: "200px";
+    border-radius: 10px;
+}
+.sign {
+    margin: 8px;
+    padding: 8px;
+    justify-content: center;
+}
+.buttoncontrols {
+    display: flex;
+    justify-content: center;
+    margin: 8px;
+    padding: 8px;
+    border-radius: 10px;
+    background-color: darkcyan;
+}
+.buttoncontrols button {
+    margin: 0 5 0 5;
+    font-size: 1rem;
+    border-radius: 5px;
 }
 
-/*booking section*/
-
+/* ----------------------------------------------------------
+    booking section 
+---------------------------------------------------------- */
 .booking
 {
     display: flex;
@@ -85,11 +87,8 @@ canvas {
 {
     position: relative;
     width: 30%;
-    margin-left: 5px;
-    padding-left: 10px;
     border: 1px solid black;
     border-radius: 10px;
-    box-shadow: 3px 3px 5px grey;
 }
 
 .detail h2
@@ -102,12 +101,6 @@ canvas {
     left: 10px;
     padding-left: 6px;
     padding-right: 6px;
-}
-
-.button
-{
-    display: flex;
-    justify-content: center;
 }
 
 /*-----------------------------------------------------
@@ -152,7 +145,7 @@ canvas {
     "g h h"
     "i j j"
     ". k .";
-    padding: .5rem;
+    padding: 1rem;
 }
 
 .gridcard { align-self: center; grid-area: a;}
