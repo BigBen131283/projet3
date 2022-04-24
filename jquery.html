@@ -13,7 +13,7 @@
     <button id="HideP1">Hide P1 and Fade P4</button>
     <button id="HideP2">Hide P2</button>
     <button id="HideP3">Toggle P3</button>
-    <button id="HideAll">Hide/show All</button>
+    <button id="HideShowAll">Hide/show All</button>
 
     <p id="p1">This is paragraph P1. Click the proper button to hide it !</p>
     <p id="p2">This is paragraph P2. Click the proper button to hide it !</p>
@@ -31,8 +31,8 @@
     const Version = " jquery.html: Apr 24 2022, 1.04 ";
 
     $(document).ready(function(){
-        $("#HideAll").click( () => {
-            $("p").toggle(1000);
+        $("#HideShowAll").click( () => {
+            $("p").toggle(500);
         })
         $("#HideP1").click( () => {
             $("#p5").slideToggle(2000);
