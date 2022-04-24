@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./utilities/jquery-3.6.0.min.js"></script>
+    <title>test JQUERY</title>
+</head>
+<body>
+    <h1>Hello M'r Query</h1>
+    <h3>jquery.html: Apr 24 2022, 1.01</h3>
+    <button id="HideP1">Hide P1</button>
+    <button id="HideP2">Hide P2</button>
+
+    <p id="p1">This is paragraph P1. Click the proper button to hide it !</p>
+    <p id="p2">This is paragraph P2. Click the proper button to hide it !</p>
+</body>
+</html>
+<script>
+    let p1show = true;
+    let p2show = true;
+    $(document).ready(function(){
+        $("#HideP1").click( () => {
+            if(p1show) {
+                $("#p1").hide();
+                $("#HideP1").text("Show p1");
+                p1show = false;                
+            }
+            else {
+                $("#p1").show();
+                $("#hideP1").text("Hide p1");
+                p1show = true;                
+            }
+        });
+        $("#HideP2").click( () => {
+            if(p2show) {
+                $("#p2").hide();
+                $("#HideP2").text("Show p2");
+                p2show = false;                
+            }
+            else {
+                $("#p2").show();
+                $("#hideP2").text("Hide p2");
+                p2show = true;                
+            }
+        });
+        $("p").on({
+            mouseenter: function(){
+                $(this).css("background-color", "lightgray");
+            },
+            mouseleave: function(){
+                $(this).css("background-color", "lightblue");
+            },
+            click: function(){
+                $(this).css("background-color", "yellow");
+            }
+        });
+    });
+</script>
