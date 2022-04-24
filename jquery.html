@@ -10,11 +10,16 @@
 <body>
     <h1>Hello M'r Query</h1>
     <h3>jquery.html: Apr 24 2022, 1.01</h3>
-    <button id="HideP1">Hide P1</button>
+    <button id="HideP1">Hide P1 and Fade P4</button>
     <button id="HideP2">Hide P2</button>
+    <button id="HideP3">Toggle P3</button>
 
     <p id="p1">This is paragraph P1. Click the proper button to hide it !</p>
     <p id="p2">This is paragraph P2. Click the proper button to hide it !</p>
+    <p id="p3">This is paragraph P3. Click the proper button to hide it !</p>
+    <p id="p4">This is paragraph P4. Test Fading!</p>
+    <p id="p5">P5 : Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta voluptatibus obcaecati eaque doloribus commodi ipsam nisi sequi nulla quas sint.</p>
+    <p id="p6">P6 : test animate</p>
 </body>
 </html>
 <script>
@@ -22,20 +27,25 @@
     let p2show = true;
     $(document).ready(function(){
         $("#HideP1").click( () => {
+            $("#p5").slideToggle(2000);
             if(p1show) {
-                $("#p1").hide();
+                $("#p1").hide(2000);
                 $("#HideP1").text("Show p1");
+                $("#p4").fadeOut(1000);
                 p1show = false;                
             }
             else {
-                $("#p1").show();
+                $("#p1").show(2000);
                 $("#hideP1").text("Hide p1");
+                $("#p4").fadeIn(1000);
                 p1show = true;                
             }
         });
         $("#HideP2").click( () => {
             if(p2show) {
-                $("#p2").hide();
+                $("#p2").hide(1500, () => {
+                    console.log("Callback when hiding P2")
+                });
                 $("#HideP2").text("Show p2");
                 p2show = false;                
             }
@@ -44,6 +54,9 @@
                 $("#hideP2").text("Hide p2");
                 p2show = true;                
             }
+        });
+        $("#HideP3").click( () => {
+            $("#p3").toggle(1000);
         });
         $("p").on({
             mouseenter: function(){
@@ -56,5 +69,10 @@
                 $(this).css("background-color", "yellow");
             }
         });
+        let div = $("#p6");
+        div.animate({left: '100px'}, "slow");
+        div.animate({fontSize: '3em'}, "slow"); 
+        div.animate({fontSize: '1rem'}, "slow");    
+        div.animate({fontSize: '2rem'}, "slow");    
     });
 </script>
