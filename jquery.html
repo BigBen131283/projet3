@@ -120,20 +120,23 @@
         $("#JCDECAUX").click( () => {
             let thecity = $("[name = 'ville']").val();
             if((thecity !== undefined)&&(thecity !== "")) {
-                $.get("https://api.jcdecaux.com/vls/v1/stations?contract=" + thecity + "&apiKey=0b872e25a940eeebc3e9a35346780b1074916a8f", 
-                function(data, status){
-                    alert("Status: " + status + " for " + data.length + " stations");
-                });            
+                callDECAUX(thecity);
             }
         })
         // How to get the listbox selected value !!!
         $("[name = 'ville']").change( ()=> {
             let thecity = $("[name = 'ville']").val();
             if((thecity !== undefined) && (thecity !== "")) {
-                console.log("Got " + thecity)
+                callDECAUX(thecity);
             }
         })
     });
+    function callDECAUX(thecity) {
+        $.get("https://api.jcdecaux.com/vls/v1/stations?contract=" + thecity + "&apiKey=0b872e25a940eeebc3e9a35346780b1074916a8f", 
+                function(data, status){
+                    alert("Status: " + status + " for " + data.length + " stations");
+                });            
+    }
 </script>
 <style>
     .copyright {
