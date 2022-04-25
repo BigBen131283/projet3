@@ -22,13 +22,14 @@
     <p id="p5">P5 : Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta voluptatibus obcaecati eaque doloribus commodi ipsam nisi sequi nulla quas sint.</p>
     <p id="p6">P6 : test animate</p>
     <p id="copyright"></p>
+    <p id="css"></p>
 </body>
 </html>
 <script>
     let p1show = true;
     let p2show = true;
     let p1cycle = 0;
-    const Version = " jquery.html: Apr 24 2022, 1.04 ";
+    const Version = " jquery.html: Apr 25 2022, 1.05 ";
 
     $(document).ready(function(){
         $("#HideShowAll").click( () => {
@@ -88,6 +89,12 @@
         div.animate({fontSize: '2rem'}, "slow");
 
         $("#copyright").text(Version).addClass("copyright");
+        $("#css").text( () => {
+            let bkgcol = $("#copyright").css("background-color");
+            let col = $("#copyright").css("color");
+            let fsize = $("#copyright").css("font-size");
+            return `Background color : ${bkgcol} font size : ${fsize}`;
+        })        
     });
 </script>
 <style>
