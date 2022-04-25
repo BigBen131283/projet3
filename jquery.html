@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="./utilities/jquery-3.6.0.min.js"></script>
+    <!-- <script src="./utilities/jquery-3.6.0.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <title>test JQUERY</title>
 </head>
 <body>
@@ -14,6 +15,14 @@
     <button id="HideP2">Hide P2</button>
     <button id="HideP3">Toggle P3</button>
     <button id="HideShowAll">Hide/show All</button>
+    <button id="JCDECAUX">Ajax Call</button>
+
+    <select name="ville" id="#cityselect">
+        <option value="LYON">LYON</option>
+        <option value="TOULOUSE">TOULOUSE</option>
+    </select>
+
+
 
     <p id="p1">This is paragraph P1. Click the proper button to hide it !</p>
     <p id="p2">This is paragraph P2. Click the proper button to hide it !</p>
@@ -21,6 +30,9 @@
     <p id="p4">This is paragraph P4. Test Fading!</p>
     <p id="p5">P5 : Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta voluptatibus obcaecati eaque doloribus commodi ipsam nisi sequi nulla quas sint.</p>
     <p id="p6">P6 : test animate</p>
+    <div id="oneimage">
+        <img src="./images/image1.jpg" alt="">
+    </div>
     <p id="copyright"></p>
     <p id="css"></p>
 </body>
@@ -29,9 +41,10 @@
     let p1show = true;
     let p2show = true;
     let p1cycle = 0;
-    const Version = " jquery.html: Apr 25 2022, 1.05 ";
+    const Version = " jquery.html: Apr 25 2022, 1.08 ";
 
     $(document).ready(function(){
+
         $("#HideShowAll").click( () => {
             $("p").toggle(500);
         })
@@ -93,8 +106,33 @@
             let bkgcol = $("#copyright").css("background-color");
             let col = $("#copyright").css("color");
             let fsize = $("#copyright").css("font-size");
-            return `Background color : ${bkgcol} font size : ${fsize}`;
-        })        
+            return `Background color : ${bkgcol} color: ${col} font size : ${fsize}`;
+        })     
+        // Play with an image
+        $("#oneimage").width(400).height(200);
+        let iw = $("#oneimage").width();
+        let ih = $("#oneimage").height();
+        console.log(iw, ih)
+        // Traversing filtering
+        $("p").first().css("color", "red");
+        $("p").last().css("color", "white");
+        // Play with JCdecaux API
+        $("#JCDECAUX").click( () => {
+            let thecity = $("[name = 'ville']").val();
+            if((thecity !== undefined)&&(thecity !== "")) {
+                $.get("https://api.jcdecaux.com/vls/v1/stations?contract=" + thecity + "&apiKey=0b872e25a940eeebc3e9a35346780b1074916a8f", 
+                function(data, status){
+                    alert("Status: " + status + " for " + data.length + " stations");
+                });            
+            }
+        })
+        // How to get the listbox selected value !!!
+        $("[name = 'ville']").change( ()=> {
+            let thecity = $("[name = 'ville']").val();
+            if((thecity !== undefined) && (thecity !== "")) {
+                console.log("Got " + thecity)
+            }
+        })
     });
 </script>
 <style>
