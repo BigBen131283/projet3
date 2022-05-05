@@ -4,7 +4,7 @@
                         The goal is to understand Promises and ASYNC calls
 ----------------------------------------------------------------------------------------- */
 
-
+fs = require('fs');
 // ---------------------------------------------------------
 //  Utilities
 // ---------------------------------------------------------
@@ -112,4 +112,11 @@ Promise.all([req1, req2, req3])
         log(error)
     })
 
-
+// test de callback
+let filePath = "sandbox/PromiseTest.html"
+fs.readFile(filePath, function(err, data) {
+    if (err) {
+        throw err;
+    }
+    log("fichier lu")
+});
